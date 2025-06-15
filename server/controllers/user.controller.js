@@ -74,7 +74,7 @@ export const registerUser = async (req, res) => {
 
     try {
       await transporter.sendMail({
-        from: `"CONNECTING CAMPUSES" <${process.env.EMAIL_USER}>`,
+        from: `"OneBITstop" <${process.env.EMAIL_USER}>`,
         to: newUser.email,
         subject: "Verify Your Email",
         html: `<p>Hi ${newUser.name},</p>
@@ -324,7 +324,7 @@ export const resendVerificationEmail = async (req, res) => {
     });
 
     await transporter.sendMail({
-      from: `"CONNECTING CAMPUSES" <${process.env.EMAIL_USER}>`,
+      from: `"OneBITstop" <${process.env.EMAIL_USER}>`,
       to: user.email,
       subject: "Resend: Verify Your Email",
       html: `<p>Hi ${user.name},</p>

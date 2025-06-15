@@ -1,9 +1,9 @@
-# 🌐 Connecting Campuses
+# 🌐 OneBITstop
 
 > **One-stop platform to simplify and supercharge student life on campus.**  
 > **Organize. Connect. Elevate. 🎓**
 
-Modern student life is scattered across chats, links, and lost posts — **Connecting Campuses** unifies everything you need in one sleek dashboard. Built *for students, by a student.*
+Modern student life is scattered across chats, links, and lost posts — **OneBITstop** unifies everything you need in one sleek dashboard. Built *for students, by a student.*
 
 ---
 
@@ -60,7 +60,7 @@ This project is crafted using modern tools & best practices:
 > _“Why should campus essentials be so scattered?”_
 
 From missed events to lost water bottles and uncoordinated carpools — managing college life is overwhelming.  
-**Connecting Campuses** fixes that with a unified digital interface — stylish, intuitive, and made for real student needs.
+**OneBITstop** fixes that with a unified digital interface — stylish, intuitive, and made for real student needs.
 
 No more lost info. No more chaos. Just connection.
 

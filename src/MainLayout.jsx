@@ -14,11 +14,11 @@ const MainLayout = () => {
   return (
     <>
       <HeroSection />
-      <ClubStrip />
-      <Newsroom />
+
+      {/* <Newsroom />
       <LostAndFound />
       <CarpoolingSection />
-      <SellBuySection />
+      <SellBuySection /> */}
     </>
   );
 };

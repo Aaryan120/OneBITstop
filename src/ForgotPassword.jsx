@@ -13,19 +13,17 @@ const ForgotPassword = () => {
     setLoading(true);
     setMsg("");
 
-    console.log("Submitting forgot password for email:", email);
-
     try {
       const res = await axios.post(`${USER_API_ENDPOINT}/api/user/forgot-password`, {
         email,
       });
 
-      console.log("Forgot password response:", res.data);
+
       setMsg(res.data.message);
       toast.success("Reset link sent. Check your email.");
     } catch (err) {
       const errorMsg = err.response?.data?.message || "Something went wrong";
-      console.error("Forgot password error:", err);
+
       setMsg(errorMsg);
       toast.error(errorMsg);
     } finally {

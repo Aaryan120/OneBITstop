@@ -5,7 +5,7 @@ import { Input } from "../components/ui/input";
 import { cn } from "../lib/utils";
 import axios from "axios";
 import { USER_API_ENDPOINT } from "../../constants";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export function SignupFormDemo({ setShowSignup }) {
   const [formData, setFormData] = useState({
@@ -101,11 +101,10 @@ export function SignupFormDemo({ setShowSignup }) {
 
   return (
     <>
-      <Toaster />
       <div className="max-h-[90vh] overflow-y-auto w-full">
         <div className="shadow-input mx-auto w-full max-w-md rounded-lg bg-transparent md:p-6 dark:bg-black custom-scrollbar">
           <h2 className="text-lg font-bold text-neutral-800 dark:text-neutral-200">
-            Welcome to Connecting Campuses
+            Welcome to OneBITstop
           </h2>
           <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
             Sign up using your BIT Mesra email. A verification link will be sent
@@ -155,7 +154,7 @@ export function SignupFormDemo({ setShowSignup }) {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="btech10467.23@bitmesra.ac.in"
+                placeholder="btech10XXX.XX@bitmesra.ac.in"
               />
             </LabelInputContainer>
 
@@ -165,7 +164,7 @@ export function SignupFormDemo({ setShowSignup }) {
                 id="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="9876543210"
+                placeholder="9876XXXX210"
               />
             </LabelInputContainer>
 
@@ -186,7 +185,7 @@ export function SignupFormDemo({ setShowSignup }) {
                 id="graduatingYear"
                 value={formData.graduatingYear}
                 onChange={handleChange}
-                placeholder="2027"
+                placeholder="202X"
                 type="number"
               />
             </LabelInputContainer>

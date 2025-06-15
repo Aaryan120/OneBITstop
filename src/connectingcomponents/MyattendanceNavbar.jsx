@@ -12,7 +12,7 @@ const Navbar = ({
   const [newSubject, setNewSubject] = useState("");
   const { token, user } = useAuth(); // Use token from your Auth context
   // const token = localStorage.getItem("token"); // Fallback if not using context
-  console.log("Navbar token:", token);
+  
 
   const addSubject = () => {
   const trimmedSubject = newSubject.trim().toUpperCase(); // Convert to uppercase
@@ -22,7 +22,7 @@ const Navbar = ({
     setSubjects([...subjects, trimmedSubject]);
     setSelectedSubject(trimmedSubject);
     setNewSubject("");
-    console.log("Subject added successfully:", trimmedSubject);
+
   } else {
     alert("Subject already exists");
   }
@@ -47,7 +47,7 @@ const Navbar = ({
         }
       );
 
-      console.log("Delete request successful:", response.data);
+
 
       // Remove subject locally after successful delete
       setSubjects(subjects.filter((s) => s !== subject));
@@ -55,7 +55,7 @@ const Navbar = ({
       // Reset selected subject if it was deleted
       if (selectedSubject === subject) {
         setSelectedSubject(null);
-        console.log("Removed selected subject, resetting selection.");
+        
       }
     } catch (error) {
       console.error("Failed to delete subject:", error);

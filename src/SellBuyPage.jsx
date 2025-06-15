@@ -54,7 +54,7 @@ const SellBuyPage = () => {
         ...item,
         imageSrc: getImageSrc(item.photo), // generate src here
       }));
-      console.log("Fetched listings:", listingsWithImages);
+
 
       setMarketItems(listingsWithImages); // update state
     } catch (err) {
@@ -290,7 +290,6 @@ const SellBuyPage = () => {
                   required
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    console.log("Picked file:", file);
                     setImageFile(file);
                   }}
                   className="hidden"

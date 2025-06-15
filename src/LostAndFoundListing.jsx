@@ -213,14 +213,14 @@ const LostAndFoundListing = () => {
     );
     if (!confirmed) return;
 
-    console.log("Attempting to delete item with ID:", id);
+
 
     try {
       await axios.delete(`${USER_API_ENDPOINT}/api/l-f-items/${id}`, {
         withCredentials: true, // include cookies or session tokens
       });
 
-      console.log("Item deleted successfully");
+
       alert("Item deleted successfully!");
 
       setItems((prev) => prev.filter((item) => (item._id || item.id) !== id));

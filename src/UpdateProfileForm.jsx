@@ -12,7 +12,7 @@ const UpdateProfileForm = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  console.log("User object from useAuth:", user);
+
 
   if (!user) {
     console.error("User not authenticated, redirecting to login.");
@@ -32,7 +32,7 @@ const UpdateProfileForm = () => {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    console.log("Input changed:", e.target.name, e.target.value);
+
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -61,7 +61,7 @@ const UpdateProfileForm = () => {
           : formData.graduatingYear,
     };
 
-    console.log("Submitting form with data:", dataToSend);
+
 
     try {
       const response = await axios.put(
@@ -72,13 +72,13 @@ const UpdateProfileForm = () => {
         }
       );
 
-      console.log("Response from update-profile API:", response);
+
 
       setMessage(response.data.message);
       setSuccess(true);
 
       const updatedUser = response.data.user;
-      console.log("Updated user from response:", updatedUser);
+
 
       // Normalize keys
       const cleanedUser = {
@@ -88,7 +88,6 @@ const UpdateProfileForm = () => {
       };
 
       localStorage.setItem("user", JSON.stringify(cleanedUser));
-      console.log("Updated localStorage user:", cleanedUser);
 
       navigate("/profile");
     } catch (error) {

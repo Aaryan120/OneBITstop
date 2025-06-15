@@ -16,8 +16,6 @@ const Navbar = () => {
 
   const { user, setUser, logout: logoutFn, loading } = useAuth();
 
-  console.log("AuthContext user:", user);
-  console.log("AuthContext setUser:", setUser);
   // get user and setter from context
 
   if (loading) {
@@ -49,10 +47,10 @@ const Navbar = () => {
   }
 
   const navLinks = [
-    { href: "#newsroom", label: "Newsroom" },
-    { href: "#lostfound", label: "Lost & Found" },
-    { href: "#carpooling", label: "Carpooling" },
-    { href: "#sellbuy", label: "Sell & Buy" },
+    { href: "/newsroom", label: "Newsroom" },
+    { href: "/lostfound", label: "Lost & Found" },
+    { href: "/carpooling", label: "Carpooling" },
+    { href: "/sellbuy", label: "Sell & Buy" },
     { href: "/attendance", label: "My Attendance" },
   ];
 
@@ -75,32 +73,10 @@ const Navbar = () => {
       return;
     }
 
-    const isHash = href.startsWith("#");
-
-    if (isHash) {
-      const sectionId = href.slice(1);
-      if (location.pathname !== "/") {
-        navigate("/", { state: { scrollTo: sectionId } });
-      } else {
-        document
-          .getElementById(sectionId)
-          ?.scrollIntoView({ behavior: "smooth" });
-      }
-    } else {
-      navigate(href);
-    }
-
+    // Navigate to the page directly without hash handling
+    navigate(href);
     setIsOpen(false);
   };
-
-  useEffect(() => {
-    if (location.pathname === "/" && location.state?.scrollTo) {
-      const el = document.getElementById(location.state.scrollTo);
-      if (el) {
-        setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 100);
-      }
-    }
-  }, [location]);
 
   useEffect(() => {
     document.body.style.overflow = showLogin ? "hidden" : "";
@@ -164,7 +140,7 @@ const Navbar = () => {
               href="/"
               className="text-2xl font-extrabold text-orange-500 hover:text-orange-600 transition"
             >
-              ConnectingCampuses
+              OneBITstop
             </a>
 
             {/* Desktop Nav */}

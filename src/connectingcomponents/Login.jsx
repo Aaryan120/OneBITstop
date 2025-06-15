@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import axios from "axios";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
@@ -53,12 +53,11 @@ const LoginForm = ({ onLoginSuccess, onClose }) => {
     setErrorMsg("");
     setLoading(true);
 
-    console.log("Login form submitted with data:", formData);
 
     if (!formData.email || !formData.password) {
       setErrorMsg("Both fields are required.");
       setLoading(false);
-      console.log("Login failed: missing email or password");
+
       return;
     }
 
@@ -72,12 +71,11 @@ const LoginForm = ({ onLoginSuccess, onClose }) => {
         }
       );
 
-      console.log("Login API response:", res.data);
 
       if (!res.data.success) {
         setErrorMsg(res.data.message || "Login failed.");
         setLoading(false);
-        console.log("Login failed: success flag false");
+
         return;
       }
 
@@ -86,7 +84,6 @@ const LoginForm = ({ onLoginSuccess, onClose }) => {
       // Store user info only, no token
       localStorage.setItem("user", JSON.stringify(user));
 
-      console.log("User stored:", localStorage.getItem("user"));
 
       if (!user.isVerified) {
         setErrorMsg("Please verify your email before logging in.");
@@ -94,7 +91,7 @@ const LoginForm = ({ onLoginSuccess, onClose }) => {
         setLoading(false);
         return;
       }
-      console.log("User from server:", user);
+
 
       // No token in localStorage, no need to set axios default headers here
       // Because the token is automatically sent in cookies with future requests (if withCredentials is set)
@@ -145,8 +142,6 @@ const LoginForm = ({ onLoginSuccess, onClose }) => {
 
   return (
     <>
-      <Toaster />
-
       <div className="w-full flex justify-center">
         <div className="shadow-input w-full max-w-md rounded-lg bg-transparent p-6 dark:bg-black">
           <h2 className="text-lg font-bold text-neutral-800 dark:text-neutral-200">
@@ -192,7 +187,7 @@ const LoginForm = ({ onLoginSuccess, onClose }) => {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="btechXXXX.2X@bitmesra.ac.in"
+                placeholder="btech10XXX.XX@bitmesra.ac.in"
                 required
               />
             </LabelInputContainer>

@@ -149,7 +149,7 @@ const NewsroomDashboard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {newsroomEvents.map((event) => {
-        console.log("Event photo structure:", event.photo);
+
           const imgSrc = getImageSrc(event.photo);
           return (
             <div

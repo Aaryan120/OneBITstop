@@ -222,7 +222,7 @@ export const Card = ({
     if (!confirmed) return;
 
     if (!card._id) return;
-    // console.log("Deleting event with ID:", card._id);
+
 
     try {
       // Call the DELETE endpoint
@@ -244,9 +244,7 @@ export const Card = ({
   };
 
   const canDelete = user?.email && user.email === card.email;
-  const canShowTrash = canDelete && pathname === "/newsroom"; // ✅ Conditional check here  // console.log("User email:", user?.email);
-  // console.log("Card email:", card.email);
-  // console.log("Card rendered with canDelete:", canDelete);
+  const canShowTrash = canDelete && pathname === "/newsroom"; // ✅ Conditional check here
 
   return (
     <>

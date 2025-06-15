@@ -1,14 +1,15 @@
 import React from "react";
+import ClubStrip from "./ClubStrip";
 
 export default function LandingPage() {
   return (
-    <div className="relative min-h-screen w-full bg-gradient-to-br from-orange-50 via-white to-orange-100 text-gray-800 font-sans overflow-hidden">
+    <div className="relative h-screen w-full bg-gradient-to-br from-orange-50 via-white to-orange-100 text-gray-800 font-sans overflow-hidden">
       {/* Hero Section */}
       <section
         className="
           relative 
-          h-screen 
           w-full 
+          h-[90%]
           flex 
           flex-col lg:flex-row 
           items-center 
@@ -36,7 +37,7 @@ export default function LandingPage() {
         {/* Text Section */}
         <div className="relative z-10 text-center lg:text-left lg:w-1/2 space-y-6 max-w-xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-orange-600 leading-tight">
-            CONNECTING CAMPUSES
+            OneBITstop
             <br className="hidden sm:block" /> EMPOWERING STUDENTS
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-white max-w-xl mx-auto lg:mx-0 drop-shadow-lg">
@@ -111,6 +112,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      <ClubStrip />
     </div>
   );
 }
