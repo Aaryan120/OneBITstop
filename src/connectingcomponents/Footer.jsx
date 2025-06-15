@@ -188,12 +188,17 @@ const Footer = () => {
 
   const handleProfileSelect = (profile) => {
     setSelectedProfile(profile);
-    // setSelectedPlatform(null);
+    setSelectedPlatform(null);
   };
 
   const closePopup = () => {
     setSelectedProfile(null);
     setSelectedPlatform(null);
+  };
+
+  const handleBackToPlatform = () => {
+    setSelectedProfile(null);
+    // Don't set selectedPlatform to null here, keep it open
   };
 
   const handleExternalLink = (link) => {
@@ -456,7 +461,7 @@ const Footer = () => {
             {/* Action Buttons */}
             <div className="flex gap-3 mt-6">
               <button
-                onClick={() => setSelectedProfile(null)}
+                onClick={handleBackToPlatform}
                 className="flex-1 px-4 py-2 text-gray-600 cursor-pointer bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               >
                 Back
