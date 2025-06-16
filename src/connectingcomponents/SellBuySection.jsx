@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import axios from "axios";
-import { LayoutGrid } from "../components/ui/layout-grid";
+import { LayoutGrid } from "../ui/layout-grid";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
-// Replace with your actual endpoint
-import { USER_API_ENDPOINT } from "../../constants";
-import { getImageSrc } from "../SellBuyPage";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { getImageSrc } from "../../features/marketplace/SellBuyPage";
+import { USER_API_ENDPOINT } from "../../../constants";
 
 const SellBuySection = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -85,7 +86,7 @@ const SellBuySection = () => {
       className="h-screen py-7 w-full bg-gray-900 flex flex-col overflow-y-auto"
     >
       <h2 className="text-4xl font-extrabold text-white text-center mb-8">
-        College Buy Bonanza 🎉
+        BITListings 🎉
       </h2>
 
       <div className="flex-grow mb-0">
@@ -192,26 +193,26 @@ const SellBuySection = () => {
         <button
           onClick={() => (window.location.href = "/sellbuy")}
           className="
-      relative
-      inline-flex
-      items-center
-      space-x-2
-      px-6
-      py-2.5
-      rounded-full
-      bg-gradient-to-r from-cyan-500 to-blue-600
-      text-white
-      font-medium
-      shadow-md
-      hover:from-cyan-400 hover:to-blue-500
-      hover:shadow-lg
-      transition-all
-      duration-300
-      focus:outline-none
-      focus:ring-2
-      focus:ring-cyan-300
-      active:scale-95
-    "
+            relative
+            inline-flex
+            items-center
+            space-x-2
+            px-6
+            py-2.5
+            rounded-full
+            bg-gradient-to-r from-cyan-500 to-blue-600
+            text-white
+            font-medium
+            shadow-md
+            hover:from-cyan-400 hover:to-blue-500
+            hover:shadow-lg
+            transition-all
+            duration-300
+            focus:outline-none
+            focus:ring-2
+            focus:ring-cyan-300
+            active:scale-95
+          "
         >
           <span>Show More</span>
           <svg

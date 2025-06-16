@@ -1,10 +1,11 @@
 // import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
 import { USER_API_ENDPOINT } from "../constants";
+import toast, { Toaster } from "react-hot-toast";
 
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams();

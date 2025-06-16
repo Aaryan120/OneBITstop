@@ -1,18 +1,15 @@
+import React, { useState, useEffect } from "react";
 import { Label } from "./components/ui/label";
 import { Input } from "./components/ui/input";
 import { cn } from "./lib/utils";
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-
-import { USER_API_ENDPOINT } from "../constants";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { USER_API_ENDPOINT } from "../constants";
 import { useAuth } from "./context/AuthContext";
 
 const UpdateProfileForm = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-
-
 
   if (!user) {
     console.error("User not authenticated, redirecting to login.");
@@ -32,7 +29,6 @@ const UpdateProfileForm = () => {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -61,8 +57,6 @@ const UpdateProfileForm = () => {
           : formData.graduatingYear,
     };
 
-
-
     try {
       const response = await axios.put(
         `${USER_API_ENDPOINT}/api/user/update-profile`,
@@ -72,13 +66,10 @@ const UpdateProfileForm = () => {
         }
       );
 
-
-
       setMessage(response.data.message);
       setSuccess(true);
 
       const updatedUser = response.data.user;
-
 
       // Normalize keys
       const cleanedUser = {
