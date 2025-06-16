@@ -131,7 +131,7 @@ export function SignupFormDemo({ setShowSignup }) {
                 onClick={resendVerification}
                 className="text-blue-600 hover:underline"
               >
-                Didn’t get the email? Resend verification link
+                Didn't get the email? Resend verification link
               </button>
             </div>
           )}

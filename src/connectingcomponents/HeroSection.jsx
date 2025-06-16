@@ -1,7 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import ClubStrip from "./ClubStrip";
 
 export default function LandingPage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   return (
     <div className="relative h-screen w-full bg-gradient-to-br from-orange-50 via-white to-orange-100 text-gray-800 font-sans overflow-hidden">
       {/* Hero Section */}
@@ -9,7 +14,7 @@ export default function LandingPage() {
         className="
           relative 
           w-full 
-          h-[90%]
+          h-full
           flex 
           flex-col lg:flex-row 
           items-center 
@@ -45,17 +50,55 @@ export default function LandingPage() {
             and more — all in one fun, vibrant platform built for students.
           </p>
 
-          <button className="relative inline-flex h-12 overflow-hidden rounded-full p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
-            <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
-            <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium text-white backdrop-blur-3xl">
-              Explore Now
-            </span>
-          </button>
+          {/* Call to Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            {user ? (
+              <button 
+                onClick={() => navigate('/profile')}
+                className="relative group px-8 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-orange-300"
+              >
+                <span className="relative z-10">View Profile</span>
+                <span className="absolute inset-0 rounded-full bg-orange-500 opacity-0 group-hover:opacity-20 transition duration-300 animate-pulse pointer-events-none"></span>
+              </button>
+            ) : (
+              <>
+                <button 
+                  onClick={() => navigate('/login')}
+                  className="relative group px-8 py-3 bg-white text-gray-800 rounded-full font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-300 border-2 border-gray-200"
+                >
+                  <span className="relative z-10">Sign In</span>
+                  <span className="absolute inset-0 rounded-full bg-gray-100 opacity-0 group-hover:opacity-50 transition duration-300 pointer-events-none"></span>
+                </button>
+                <button 
+                  onClick={() => navigate('/signup')}
+                  className="relative group px-8 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-orange-300"
+                >
+                  <span className="relative z-10">Get Started</span>
+                  <span className="absolute inset-0 rounded-full bg-orange-500 opacity-0 group-hover:opacity-20 transition duration-300 animate-pulse pointer-events-none"></span>
+                </button>
+              </>
+            )}
+          </div>
 
-          {/* <button className="relative group px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-orange-300">
-            <span className="relative z-10">Explore Now</span>
-            <span className="absolute inset-0 rounded-full bg-orange-500 opacity-0 group-hover:opacity-20 transition duration-300 animate-pulse pointer-events-none"></span>
-          </button> */}
+          {/* Features Preview */}
+          <div className="flex flex-wrap justify-center lg:justify-start gap-4 mt-8">
+            <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
+              <span className="text-2xl">📰</span>
+              <span className="text-white text-sm font-medium">Newsroom</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
+              <span className="text-2xl">🚗</span>
+              <span className="text-white text-sm font-medium">HopBIT</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
+              <span className="text-2xl">🛒</span>
+              <span className="text-white text-sm font-medium">BITListings</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
+              <span className="text-2xl">📊</span>
+              <span className="text-white text-sm font-medium">Attendance</span>
+            </div>
+          </div>
         </div>
 
         {/* Image Section */}
@@ -112,7 +155,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      <ClubStrip />
     </div>
   );
 }

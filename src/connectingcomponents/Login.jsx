@@ -1,15 +1,16 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+import { useNavigate, Link } from "react-router-dom";
 
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { cn } from "../lib/utils";
 import { USER_API_ENDPOINT } from "../../constants";
+import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from "react-icons/fi";
 
 import { SignupFormDemo } from "./Signup";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 // adjust path if needed
 
@@ -175,7 +176,7 @@ const LoginForm = ({ onLoginSuccess, onClose }) => {
                     onClick={resendVerification}
                     className="text-blue-600 hover:underline"
                   >
-                    Didn’t get the email? Resend verification link
+                    Didn't get the email? Resend verification link
                   </button>
                 </div>
               )}
@@ -216,7 +217,7 @@ const LoginForm = ({ onLoginSuccess, onClose }) => {
 
           <div className="mt-4 text-center">
             <p className="text-neutral-600 dark:text-neutral-300 text-sm">
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <button
                 type="button"
                 onClick={() => setShowSignup(true)}

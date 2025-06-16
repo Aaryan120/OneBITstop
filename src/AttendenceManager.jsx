@@ -22,7 +22,7 @@ const AttendenceManager = () => {
   useEffect(() => {
     if (!user) {
       toast.error("Please log in to access attendance manager.");
-      navigate("/");
+      navigate("/login");
       return;
     }
 

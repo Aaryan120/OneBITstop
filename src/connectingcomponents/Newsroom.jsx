@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Carousel, Card } from "../components/ui/apple-cards-carousel";
+import { Carousel, Card } from "../ui/apple-cards-carousel";
 import { toast } from "react-hot-toast";
 import axios from "axios";
-import { USER_API_ENDPOINT } from "../../constants";
+import { useNavigate } from "react-router-dom";
+import { USER_API_ENDPOINT } from "../../../constants";
 
 const Newsroom = () => {
   const [events, setEvents] = useState([]);
