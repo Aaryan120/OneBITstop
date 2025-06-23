@@ -5,6 +5,8 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { USER_API_ENDPOINT } from "../../constants";
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from "react-icons/fi";
+import { motion } from "framer-motion";
+import { User } from "lucide-react";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -90,21 +92,31 @@ const LoginPage = () => {
   return (
     <>
       <Toaster />
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-800 dark:to-slate-900 flex items-center justify-center p-4">
         <div className="max-w-md w-full">
           {/* Header */}
           <div className="text-center mb-8">
             <Link to="/" className="inline-block mb-6">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-xl">O</span>
+                </div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 OneBITstop
               </h1>
+              </div>
             </Link>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome back</h2>
             <p className="text-gray-600">Sign in to your account</p>
           </div>
 
           {/* Login Form */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 p-8"
+          >
             <form onSubmit={handleSubmit} className="space-y-6">
               {errorMsg && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -131,12 +143,13 @@ const LoginPage = () => {
                     <FiMail className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    id="email"
                     type="email"
+                    id="email"
+                    name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="btech10XXX.XX@bitmesra.ac.in"
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 dark:focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Enter your email"
                     required
                   />
                 </div>
@@ -152,12 +165,13 @@ const LoginPage = () => {
                     <FiLock className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
+                    type={showPassword ? 'text' : 'password'}
                     id="password"
-                    type={showPassword ? "text" : "password"}
+                    name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="••••••••"
-                    className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200"
+                    className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 dark:focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Enter your password"
                     required
                   />
                   <button
@@ -175,36 +189,37 @@ const LoginPage = () => {
               </div>
 
               {/* Forgot Password */}
-              <div className="flex items-center justify-end">
+              <div className="text-center">
                 <Link
                   to="/forgot-password"
-                  className="text-sm text-orange-600 hover:text-orange-700 font-medium"
+                  className="text-sm text-purple-600 dark:text-blue-400 hover:text-purple-700 dark:hover:text-blue-300 transition-colors duration-200"
                 >
                   Forgot your password?
                 </Link>
               </div>
 
               {/* Submit Button */}
-              <button
+              <motion.button
+                whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-4 rounded-lg font-medium hover:from-orange-600 hover:to-red-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
+                className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-blue-500 focus:ring-offset-2"
               >
                 {loading ? (
-                  <>
+                  <div className="flex items-center justify-center space-x-2">
                     <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                     </svg>
                     <span>Signing in...</span>
-                  </>
+                  </div>
                 ) : (
-                  <>
+                  <div className="flex items-center justify-center space-x-2">
                     <span>Sign in</span>
                     <FiArrowRight className="h-4 w-4" />
-                  </>
+                  </div>
                 )}
-              </button>
+              </motion.button>
             </form>
 
             {/* Divider */}
@@ -214,8 +229,8 @@ const LoginPage = () => {
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">New to OneBITstop?</span>
-                </div>
+                  <span className="px-2 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400">Don't have an account?</span>
+              </div>
               </div>
             </div>
 
@@ -223,26 +238,27 @@ const LoginPage = () => {
             <div className="mt-6 text-center">
               <Link
                 to="/signup"
-                className="inline-flex items-center justify-center w-full px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors duration-200"
+                  className="inline-flex items-center justify-center w-full py-3 px-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
               >
-                Create an account
+                  <User className="w-4 h-4 mr-2" />
+                  Create new account
               </Link>
             </div>
-          </div>
+          </motion.div>
 
           {/* Footer */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-gray-500">
-              By signing in, you agree to our{" "}
-              <a href="#" className="text-orange-600 hover:text-orange-700">
+          {/* <div className="text-center mt-8">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              By signing in, you agree to our{' '}
+              <Link to="/terms" className="text-purple-600 dark:text-blue-400 hover:underline">
                 Terms of Service
-              </a>{" "}
-              and{" "}
-              <a href="#" className="text-orange-600 hover:text-orange-700">
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacy" className="text-purple-600 dark:text-blue-400 hover:underline">
                 Privacy Policy
-              </a>
+              </Link>
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
     </>
