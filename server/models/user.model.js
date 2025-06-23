@@ -15,8 +15,8 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       match: [
-        /^btech\d{5}\.\d{2}@bitmesra\.ac\.in$/,
-        "Please use your registered college email (e.g., btech10467.23@bitmesra.ac.in)",
+        /^(btech|imh|mca|mba)\d{5}\.\d{2}@bitmesra\.ac\.in$/,
+        "Please use your registered college email (e.g., btech10467.23@bitmesra.ac.in, imh10467.23@bitmesra.ac.in, mca10467.23@bitmesra.ac.in, mba10467.23@bitmesra.ac.in)",
       ],
     },
 
@@ -58,6 +58,22 @@ const userSchema = new mongoose.Schema(
       type: Date,
     },
 
+    carpools: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'Carpool',
+    },
+    sellBuyListings: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'SellBuy',
+    },
+    attendanceModel: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'Attendance',
+    },
+    lostAndFoundListings: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'LostAndFound',
+    },
     createdAt: {
       type: Date,
       default: Date.now,

@@ -1,4 +1,5 @@
 import Carpool from '../models/Carpool.model.js';
+import User from '../models/user.model.js';
 
 export const createCarpool = async (req, res) => {
   try {
@@ -12,6 +13,27 @@ export const createCarpool = async (req, res) => {
       contactNumber,
       email
     } = req.body;
+    const userId = req.user?._id;
+    if(!userId){
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+    
+    const user = await User.findByIdAndUpdate(userId, {
+      $push: {
+        carpools: carpool._id
+      }
+    });
+
+    //check if all fields are present
+    if(!pickupLocation || !dropLocation || !travelDate || !departureTime || !seatsAvailable || !contactNumber || !email){
+      return res.status(400).json({
+        success: false,
+        message: 'All fields are required'
+      });
+    }
 
     const carpool = new Carpool({
       pickupLocation,
@@ -21,22 +43,43 @@ export const createCarpool = async (req, res) => {
       seatsAvailable,
       additionalNotes,
       contactNumber,
-      email
+      email,
+      userId
     });
 
+    
+
+
+
     await carpool.save();
-    res.status(201).json({ message: 'Carpool listing created successfully', carpool });
+    res.status(201).json({ 
+      success: true,
+      message: 'Carpool listing created successfully',
+      data: carpool
+    });
   } catch (error) {
-    res.status(400).json({ message: 'Failed to create carpool listing', error: error.message });
+    res.status(400).json({
+      success: false,
+      message: 'Failed to create carpool listing',
+      error: error.message
+    });
   }
 };
 
 export const getAllCarpools = async (req, res) => {
   try {
     const carpools = await Carpool.find().sort({ travelDate: 1 });
-    res.status(200).json(carpools);
+    res.status(200).json({
+      success: true,
+      message: 'Carpool listings fetched successfully',
+      data: carpools
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching carpool listings', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching carpool listings',
+      error: error.message
+    });
   }
 };
 
@@ -46,11 +89,21 @@ export const deleteCarpoolById = async (req, res) => {
     const deleted = await Carpool.findByIdAndDelete(id);
 
     if (!deleted) {
-      return res.status(404).json({ message: 'Carpool listing not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'Carpool listing not found'
+      });
     }
 
-    res.status(200).json({ message: 'Carpool listing deleted successfully' });
+    res.status(200).json({
+      success: true,
+      message: 'Carpool listing deleted successfully'
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting carpool listing', error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting carpool listing',
+      error: error.message
+    });
   }
 };
