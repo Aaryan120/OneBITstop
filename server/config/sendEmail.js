@@ -10,7 +10,7 @@ const sendEmail = async ({ to, subject, text }) => {
   });
 
   await transporter.sendMail({
-    from: process.env.EMAIL_USER,
+    from: "OneBITstop - from BITIANS for BITIANS",
     to,
     subject,
     text,
