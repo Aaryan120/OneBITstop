@@ -95,7 +95,12 @@ const LoginPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-800 dark:to-slate-900 flex items-center justify-center p-4">
         <div className="max-w-md w-full">
           {/* Header */}
-          <div className="text-center mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-8"
+          >
             <Link to="/" className="inline-block mb-6">
               <div className="flex items-center justify-center space-x-2">
                 <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -106,9 +111,9 @@ const LoginPage = () => {
               </h1>
               </div>
             </Link>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome back</h2>
-            <p className="text-gray-600">Sign in to your account</p>
-          </div>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Welcome back</h2>
+            <p className="text-gray-600 dark:text-gray-400">Sign in to your account</p>
+          </motion.div>
 
           {/* Login Form */}
           <motion.div

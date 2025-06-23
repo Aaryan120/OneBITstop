@@ -21,7 +21,14 @@ const AttendenceManager = () => {
 
   useEffect(() => {
     if (!user) {
-      toast.error("Please log in to access attendance manager.");
+      toast(
+        "Please log in to access attendance manager.",
+        {
+        icon: "🔒",
+        duration: 3000,
+        position: "bottom-right",
+        }
+      );
       navigate("/login");
       return;
     }
@@ -31,7 +38,14 @@ const AttendenceManager = () => {
         const token = user?.token || localStorage.getItem("token");
 
         if (!token) {
-          toast.error("No token found. Redirecting to login.");
+          toast(
+            "No token found. Redirecting to login.",
+            {
+              icon: "🔒",
+              duration: 3000,
+              position: "bottom-right",
+            }
+          );
           navigate("/");
           return;
         }
@@ -49,7 +63,14 @@ const AttendenceManager = () => {
         const data = response.data;
 
         if (!Array.isArray(data) || data.length === 0) {
-          toast.error("No attendance records found.");
+          toast(
+            "No attendance records found.",
+            {
+              icon: "❌",
+              duration: 3000,
+              position: "bottom-right",
+            }
+          );
           return;
         }
 
@@ -70,7 +91,14 @@ const AttendenceManager = () => {
           error.response?.statusText ||
           error.message ||
           "An error occurred while fetching attendance.";
-        toast.error(`Error: ${msg}`);
+        toast(
+          `Error: ${msg}`,
+          {
+            icon: "❌",
+            duration: 3000,
+            position: "bottom-right",
+          }
+        );
       }
     };
 
@@ -83,7 +111,14 @@ const AttendenceManager = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        toast.error("No token found");
+        toast(
+          "No token found",
+          {
+            icon: "❌",
+            duration: 3000,
+            position: "bottom-right",
+          }
+        );
         return;
       }
 
@@ -106,7 +141,14 @@ const AttendenceManager = () => {
 
       setModalDate(null);
     } catch (error) {
-      toast.error("Failed to update attendance.");
+      toast(
+        "Failed to update attendance.",
+        {
+          icon: "❌",
+          duration: 3000,
+          position: "bottom-right",
+        }
+      );
     }
   };
 
