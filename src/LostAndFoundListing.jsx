@@ -65,7 +65,6 @@ const LostAndFoundListing = () => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoadingItems, setIsLoadingItems] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [sortOrder, setSortOrder] = useState("newest");
   const [items, setItems] = useState([]);
   const [imageFile, setImageFile] = useState(null);
@@ -79,6 +78,8 @@ const LostAndFoundListing = () => {
     whatsapp: "",
     date: "",
   });
+
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
     if (user?.email) {
@@ -112,7 +113,6 @@ const LostAndFoundListing = () => {
       return;
     }
 
-    setIsSubmitting(true);
     try {
       const formData = new FormData();
       formData.append("title", newItem.title);
@@ -148,8 +148,6 @@ const LostAndFoundListing = () => {
     } catch (error) {
       console.error("Failed to add item:", error);
       alert("Error submitting item. Please try again.");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -180,10 +178,13 @@ const LostAndFoundListing = () => {
     const filtered = items.filter((item) => {
       const itemDate = new Date(item.date || item.createdAt || 0);
       itemDate.setHours(0, 0, 0, 0);
+      // Category filter (case-insensitive, fallback to 'all')
+      const categoryMatch = selectedCategory === 'all' || (item.category && item.category.toLowerCase() === selectedCategory);
       return (
         (item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.description.toLowerCase().includes(searchQuery.toLowerCase())) &&
-        itemDate <= today
+        itemDate <= today &&
+        categoryMatch
       );
     });
 
@@ -197,7 +198,7 @@ const LostAndFoundListing = () => {
     });
 
     return sorted;
-  }, [items, searchQuery, sortOrder]); // <-- Include sortOrder as a dependency
+  }, [items, searchQuery, sortOrder, selectedCategory]); // <-- Include selectedCategory as a dependency
 
   const formatDate = (dateString) => {
     const d = new Date(dateString);
@@ -207,337 +208,302 @@ const LostAndFoundListing = () => {
     return `${day}-${month}-${year}`;
   };
 
-  const handleDelete = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this item?"
-    );
-    if (!confirmed) return;
-
-
-
-    try {
-      await axios.delete(`${USER_API_ENDPOINT}/api/l-f-items/${id}`, {
-        withCredentials: true, // include cookies or session tokens
-      });
-
-
-      alert("Item deleted successfully!");
-
-      setItems((prev) => prev.filter((item) => (item._id || item.id) !== id));
-    } catch (error) {
-      console.error("Delete failed:", error);
-      alert("Failed to delete the item. Please try again.");
-    }
-  };
-
   return (
     <>
-      <div className="overflow-x-hidden">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl leading-tight font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 mb-12 text-center drop-shadow-[0_4px_12px_rgba(255,255,255,0.1)] mt-28 hover:scale-105 transition-transform duration-300 cursor-pointer px-4">
-          Lost Something? We’ve Got Your Back!
+      <div className="relative min-h-screen flex flex-col items-center justify-start overflow-hidden bg-gradient-to-br from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-800 dark:to-slate-900">
+        {/* Decorative blurred shapes */}
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-blue-400/20 to-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-300/10 to-blue-300/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-10 mt-32 text-center leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.08)] px-4">
+          Lost & Found
+          <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">Find or Recover Your Belongings</span>
         </h1>
-      </div>
 
-      <main className="flex flex-col lg:flex-row gap-8 p-4 sm:p-6 bg-gradient-to-br from-orange-50 via-white to-orange-100 min-h-[80vh] custom-scrollbar">
-        <aside className="w-full lg:w-80 p-4 sm:p-6 bg-gradient-to-br from-zinc-800 via-zinc-900 to-black shadow-lg rounded-xl mb-6 lg:mb-0 border border-zinc-700 transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl">
-          <h2 className="text-2xl font-bold mb-6 text-white text-center">
-            🔍 Filter Items
-          </h2>
-
-          <input
-            type="text"
-            placeholder="Search by title or description"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full p-2.5 mb-6 border border-zinc-600 rounded-md bg-zinc-800 text-white placeholder-zinc-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-600 transition duration-300"
-          />
-
-          <div className="mb-2">
-            <label className="block mb-2 font-semibold text-zinc-300">
-              Sort by Date:
-            </label>
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="w-full p-2.5 border border-zinc-600 rounded-md bg-zinc-800 text-white shadow-inner focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-600 transition duration-300"
-            >
-              <option value="newest">📅 Newest First</option>
-              <option value="oldest">🕰️ Oldest First</option>
-            </select>
-          </div>
-        </aside>
-
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-1">
-          {isLoadingItems ? (
-            <Loader />
-          ) : filteredItems.length === 0 ? (
-            <p className="text-center col-span-full text-gray-500">
-              No items found matching your criteria or all items have future
-              dates.
-            </p>
-          ) : (
-            filteredItems.map((item, index) => {
-              const whatsappLink = `https://wa.me/${
-                item.whatsapp
-              }?text=Hi%2C%20I'm%20inquiring%20about%20your%20item:%20${encodeURIComponent(
-                item.title
-              )}`;
-
-              const key = item._id || item.id || `${item.title}-${index}`;
-
-              return (
-                <article
-                  key={key}
-                  className="rounded-lg relative overflow-hidden bg-gray-100 w-full h-56 sm:h-64 md:h-72 lg:h-96 shadow-md"
-                >
-                  {/* Trash Button if user is owner */}
-                  {item.contact === user?.email && (
-                    <button
-                      onClick={() => handleDelete(key)}
-                      className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-md z-10"
-                      aria-label="Delete this item"
-                      title="Delete item"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-                      </svg>
-                    </button>
-                  )}
-
-                  {item.imageSrc?.trim() ? (
-                    <img
-                      src={item.imageSrc}
-                      alt={item.title}
-                      className="object-cover w-full h-full absolute inset-0"
-                      loading="lazy"
-                    />
-                  ) : null}
-
-                  <div className="absolute inset-0 bg-black/70 text-white flex flex-col justify-between p-4 sm:p-6 opacity-100">
-                    <div>
-                      <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 truncate">
-                        {item.title}
-                      </h3>
-                      <p className="mb-1 text-sm sm:text-base line-clamp-3">
-                        {item.description}
-                      </p>
-                      <p className="text-xs sm:text-sm font-mono opacity-80 mt-1 break-words">
-                        Posted by: {item.contact}
-                      </p>
-                      <p className="text-xs sm:text-sm italic opacity-80 mt-1">
-                        Date: {formatDate(item.date)}
-                      </p>
-                    </div>
-                    <div className="flex justify-end">
-                      <a
-                        href={whatsappLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-green-600 hover:bg-green-700 rounded-full p-2 transition"
-                        aria-label={`Contact ${item.contact} on WhatsApp`}
-                      >
-                        <WhatsappIcon />
-                      </a>
-                    </div>
-                  </div>
-                </article>
-              );
-            })
-          )}
-        </section>
-
-        <button
-          onClick={handleOpenModal}
-          className="fixed bottom-6 right-6 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full p-4 sm:p-5 shadow-2xl hover:from-indigo-600 hover:to-blue-700 transition duration-300 z-30"
-          title="Add New Lost/Found Item"
-          style={{
-            animation: "pulse 2.5s infinite",
-            boxShadow: "0 8px 15px rgba(59, 130, 246, 0.5)",
-          }}
-          aria-label="Add new lost or found item"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 sm:h-7 w-6 sm:w-7"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          <style>{`
-  @keyframes pulse {
-    0%,
-    100% {
-      transform: scale(1);
-      box-shadow: 0 8px 15px rgba(59, 130, 246, 0.5);
-    }
-    50% {
-      transform: scale(1.1);
-      box-shadow: 0 12px 20px rgba(59, 130, 246, 0.7);
-    }
-  }
-`}</style>
-        </button>
-
-        {isModalOpen && (
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 px-4 py-6 sm:px-0"
-            onClick={() => setIsModalOpen(false)}
-          >
-            <div
-              className="bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-xl max-w-lg w-full max-h-screen overflow-auto shadow-2xl custom-scrollbar"
-              onClick={(e) => e.stopPropagation()}
-              style={{ WebkitOverflowScrolling: "touch" }} // smooth scrolling on iOS
-            >
-              <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white text-center sm:text-left">
-                📝 Add Lost/Found Item
-              </h3>
-              <form onSubmit={handleFormSubmit} className="space-y-5">
-                <LabelInputContainer>
-                  <Label htmlFor="title">Title*</Label>
-                  <Input
-                    name="title"
-                    value={newItem.title}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Enter a clear and concise title"
-                    className="w-full"
-                  />
-                </LabelInputContainer>
-
-                <LabelInputContainer>
-                  <Label htmlFor="description">Description*</Label>
-                  <Input
-                    name="description"
-                    value={newItem.description}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Provide a short description"
-                    className="w-full"
-                  />
-                </LabelInputContainer>
-
-                <LabelInputContainer>
-                  <Label
-                    htmlFor="photo"
-                    className="text-sm font-semibold text-gray-300 mb-2 block"
-                  >
-                    Upload Image*
-                  </Label>
-
-                  <label className="flex items-center justify-center w-full p-4 bg-gray-800 text-gray-300 border border-gray-600 rounded-lg shadow-sm hover:bg-gray-700 transition cursor-pointer">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      required
-                      onChange={(e) => setImageFile(e.target.files[0])}
-                      className="hidden"
-                    />
-                    <div className="flex flex-col items-center space-y-2">
-                      <svg
-                        className="w-8 h-8 text-blue-400"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 4v16m8-8H4"
-                        />
-                      </svg>
-                      <span className="text-sm">
-                        Click to upload or drag and drop
-                      </span>
-                    </div>
+        {/* Main content container with max-width and responsive padding */}
+        <div className="relative w-full min-h-[60vh] max-w-7xl mx-auto px-2 sm:px-4 md:px-6 flex flex-col">
+          {/* Filter bar above the grid, horizontal on desktop, stacked on mobile */}
+          <div className="w-full flex flex-col md:flex-row items-stretch md:items-end gap-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-200/60 dark:border-gray-700/60 p-4 sm:p-6 mb-8">
+            {/* Desktop: left (search), center (category), right (sort). Mobile: stacked. */}
+            <div className="flex flex-col md:flex-row w-full gap-4 md:gap-0 md:items-end">
+              {/* Search input - left */}
+              <div className="w-full md:w-1/3 md:pr-4 flex items-end">
+                <input
+                  type="text"
+                  placeholder="Search by title or description"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white/90 dark:bg-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-600 transition duration-300"
+                />
+              </div>
+              {/* Category - center */}
+              <div className="w-full md:w-1/3 flex items-end justify-center md:px-4 mt-2 md:mt-0">
+                <div className="flex flex-col md:flex-row md:items-center w-full md:w-auto">
+                  <label className="block mb-1 md:mb-0 md:mr-2 font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    Category:
                   </label>
-
-                  {imageFile && (
-                    <div className="mt-3">
-                      <p className="text-xs text-gray-400 mb-1">
-                        Selected image:
-                      </p>
-                      <img
-                        src={URL.createObjectURL(imageFile)}
-                        alt="Preview"
-                        className="w-full h-48 object-cover rounded border border-gray-600"
-                      />
-                    </div>
-                  )}
-                </LabelInputContainer>
-
-                <LabelInputContainer>
-                  <Label htmlFor="contact">Contact Email*</Label>
-                  <Input
-                    name="contact"
-                    type="email"
-                    value={newItem.contact}
-                    onChange={handleInputChange}
-                    required
-                    readOnly
-                    placeholder={user?.email}
-                    className="cursor-not-allowed w-full"
-                  />
-                </LabelInputContainer>
-                <LabelInputContainer>
-                  <Label htmlFor="date">Date Lost/Found*</Label>
-                  <Input
-                    name="date"
-                    type="date"
-                    value={newItem.date}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full"
-                  />
-                </LabelInputContainer>
-
-                <LabelInputContainer>
-                  <Label htmlFor="whatsapp">WhatsApp Number*</Label>
-                  <Input
-                    name="whatsapp"
-                    type="tel"
-                    value={newItem.whatsapp}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="9876543210"
-                    pattern="[6-9]{1}[0-9]{9}"
-                    maxLength={10}
-                    className="w-full"
-                  />
-                </LabelInputContainer>
-
-                <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6">
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition"
+                  <select
+                    value={selectedCategory}
+                    onChange={e => setSelectedCategory(e.target.value)}
+                    className="w-full md:w-48 p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white/90 dark:bg-gray-800/80 text-gray-900 dark:text-white shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-600 transition duration-300"
                   >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="group/btn relative block h-10 px-5 rounded-md bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold shadow-lg hover:brightness-110 transition"
-                  >
-                    Add Item → <BottomGradient />
-                  </button>
+                    <option value="all">All Categories</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="personal">Personal</option>
+                    <option value="essentials">Essentials</option>
+                    <option value="stationery">Stationery</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
-              </form>
+              </div>
+              {/* Sort by Date - right */}
+              <div className="w-full md:w-1/3 flex items-end justify-end md:pl-4 mt-2 md:mt-0">
+                <div className="flex flex-col md:flex-row md:items-center w-full md:w-auto md:justify-end">
+                  <label className="block mb-1 md:mb-0 md:mr-2 font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    Sort by Date:
+                  </label>
+                  <select
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value)}
+                    className="w-full md:w-48 p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white/90 dark:bg-gray-800/80 text-gray-900 dark:text-white shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-600 transition duration-300"
+                  >
+                    <option value="newest">📅 Newest First</option>
+                    <option value="oldest">🕰️ Oldest First</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
-        )}
-      </main>
+
+          {/* Main grid of items */}
+          <main className="flex-1 w-full px-0 sm:px-2 md:px-4 py-4 flex flex-col">
+            <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
+              {isLoadingItems ? (
+                <Loader />
+              ) : filteredItems.length === 0 ? (
+                <p className="text-center col-span-full text-gray-500 dark:text-gray-400 text-lg font-medium">
+                  No items found matching your criteria or all items have future dates.
+                </p>
+              ) : (
+                filteredItems.map((item, index) => {
+                  const whatsappLink = `https://wa.me/${item.whatsapp}?text=Hi%2C%20I'm%20inquiring%20about%20your%20item:%20${encodeURIComponent(item.title)}`;
+                  const key = item._id || item.id || `${item.title}-${index}`;
+                  return (
+                    <article
+                      key={key}
+                      className="relative overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-gray-200/60 dark:border-gray-700/60 flex flex-col w-[370px] h-[420px] max-w-full p-0 transition-transform duration-300 hover:scale-105 hover:shadow-3xl group"
+                    >
+                      {item.imageSrc?.trim() ? (
+                        <img
+                          src={item.imageSrc}
+                          alt={item.title}
+                          className="object-cover w-full h-48 rounded-t-3xl"
+                          loading="lazy"
+                        />
+                      ) : null}
+                      <div className="flex-1 flex flex-col justify-between p-6">
+                        <div>
+                          <h3 className="text-xl font-bold mb-2 truncate drop-shadow-lg text-gray-900 dark:text-white leading-tight">
+                            {item.title}
+                          </h3>
+                          <p className="mb-2 text-sm font-medium line-clamp-3 opacity-90 text-gray-700 dark:text-gray-200 leading-relaxed">
+                            {item.description}
+                          </p>
+                          <p className="text-xs font-mono opacity-80 mt-2 break-words text-gray-500 dark:text-gray-400">
+                            Posted by: {item.contact}
+                          </p>
+                          <p className="text-xs italic opacity-80 mt-1 text-gray-500 dark:text-gray-400">
+                            Date: {formatDate(item.date)}
+                          </p>
+                        </div>
+                        <div className="flex justify-end mt-4">
+                          <a
+                            href={whatsappLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700 rounded-full p-3 shadow-lg transition-transform duration-200 hover:scale-110 flex items-center justify-center absolute bottom-6 right-6 z-10"
+                            style={{ width: '48px', height: '48px' }}
+                            aria-label={`Contact ${item.contact} on WhatsApp`}
+                          >
+                            <WhatsappIcon />
+                          </a>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })
+              )}
+            </section>
+
+            <button
+              onClick={handleOpenModal}
+              className="fixed bottom-8 right-8 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-full p-5 shadow-2xl hover:from-purple-600 hover:to-blue-700 transition-all duration-300 z-30 animate-pulse"
+              title="Add New Lost/Found Item"
+              aria-label="Add new lost or found item"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-7 w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
+
+            {isModalOpen && (
+              <div
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 px-4 py-6 sm:px-0"
+                onClick={() => setIsModalOpen(false)}
+              >
+                <div
+                  className="bg-white/90 dark:bg-gray-900/90 p-8 rounded-2xl max-w-lg w-full max-h-screen overflow-auto shadow-2xl custom-scrollbar border border-gray-200/60 dark:border-gray-700/60 backdrop-blur-md"
+                  onClick={(e) => e.stopPropagation()}
+                  style={{ WebkitOverflowScrolling: "touch" }}
+                >
+                  <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white text-center">
+                    📝 Add Lost/Found Item
+                  </h3>
+                  <form onSubmit={handleFormSubmit} className="space-y-5">
+                    <LabelInputContainer>
+                      <Label htmlFor="title">Title*</Label>
+                      <Input
+                        name="title"
+                        value={newItem.title}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="Enter a clear and concise title"
+                        className="w-full bg-white/80 dark:bg-gray-900/60 border border-gray-300 dark:border-gray-700 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-600 transition"
+                      />
+                    </LabelInputContainer>
+
+                    <LabelInputContainer>
+                      <Label htmlFor="description">Description*</Label>
+                      <Input
+                        name="description"
+                        value={newItem.description}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="Provide a short description"
+                        className="w-full bg-white/80 dark:bg-gray-900/60 border border-gray-300 dark:border-gray-700 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-600 transition"
+                      />
+                    </LabelInputContainer>
+
+                    <LabelInputContainer>
+                      <Label htmlFor="photo" className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 block">
+                        Upload Image*
+                      </Label>
+                      <label className="flex items-center justify-center w-full p-4 bg-white/80 dark:bg-gray-900/60 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          required
+                          onChange={(e) => setImageFile(e.target.files[0])}
+                          className="hidden"
+                        />
+                        <div className="flex flex-col items-center space-y-2">
+                          <svg
+                            className="w-8 h-8 text-blue-400"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 4v16m8-8H4"
+                            />
+                          </svg>
+                          <span className="text-sm">
+                            Click to upload or drag and drop
+                          </span>
+                        </div>
+                      </label>
+                      {imageFile && (
+                        <div className="mt-3">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                            Selected image:
+                          </p>
+                          <img
+                            src={URL.createObjectURL(imageFile)}
+                            alt="Preview"
+                            className="w-full h-48 object-cover rounded-lg border border-gray-300 dark:border-gray-700"
+                          />
+                        </div>
+                      )}
+                    </LabelInputContainer>
+
+                    <LabelInputContainer>
+                      <Label htmlFor="contact">Contact Email*</Label>
+                      <Input
+                        name="contact"
+                        type="email"
+                        value={newItem.contact}
+                        onChange={handleInputChange}
+                        required
+                        readOnly
+                        placeholder={user?.email}
+                        className="cursor-not-allowed w-full bg-white/80 dark:bg-gray-900/60 border border-gray-300 dark:border-gray-700 rounded-lg p-3"
+                      />
+                    </LabelInputContainer>
+                    <LabelInputContainer>
+                      <Label htmlFor="date">Date Lost/Found*</Label>
+                      <Input
+                        name="date"
+                        type="date"
+                        value={newItem.date}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full bg-white/80 dark:bg-gray-900/60 border border-gray-300 dark:border-gray-700 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-600 transition"
+                      />
+                    </LabelInputContainer>
+
+                    <LabelInputContainer>
+                      <Label htmlFor="whatsapp">WhatsApp Number*</Label>
+                      <Input
+                        name="whatsapp"
+                        type="tel"
+                        value={newItem.whatsapp}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="9876543210"
+                        pattern="[6-9]{1}[0-9]{9}"
+                        maxLength={10}
+                        className="w-full bg-white/80 dark:bg-gray-900/60 border border-gray-300 dark:border-gray-700 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-600 transition"
+                      />
+                    </LabelInputContainer>
+
+                    <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6">
+                      <button
+                        type="button"
+                        onClick={() => setIsModalOpen(false)}
+                        className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition font-semibold"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="group/btn relative block h-10 px-6 rounded-lg bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold shadow-lg hover:brightness-110 transition"
+                      >
+                        Add Item → <BottomGradient />
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+          </main>
+        </div>
+      </div>
     </>
   );
 };
