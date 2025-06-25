@@ -7,10 +7,12 @@ import AttendanceModal from "./connectingcomponents/AttendenceModal";
 import Calendar from "./connectingcomponents/Calender";
 import Navbar from "./connectingcomponents/MyattendanceNavbar";
 import { useAuth } from "./context/AuthContext";
+import { useTheme } from "./context/ThemeContext";
 import toast, { Toaster } from "react-hot-toast";
 
 const AttendenceManager = () => {
   const { user } = useAuth();
+  const { isDark } = useTheme();
   const navigate = useNavigate();
 
   const [subjects, setSubjects] = useState([]);
@@ -169,30 +171,32 @@ const AttendenceManager = () => {
   return (
     <>
       <Toaster />
-      <div className="min-h-screen bg-gray-100 pt-24 px-4">
-        <Navbar
-          subjects={subjects}
-          setSubjects={setSubjects}
-          selectedSubject={selectedSubject}
-          setSelectedSubject={setSelectedSubject}
-        />
-        {selectedSubject && (
-          <div className="flex flex-col md:flex-row mt-6 gap-4">
-            <Calendar
-              subject={selectedSubject}
-              attendance={attendance}
-              setModalDate={setModalDate}
-              currentMonth={currentMonth}
-              setCurrentMonth={setCurrentMonth}
-            />
-            <AttendanceChart data={getChartDataForSubject(selectedSubject)} />
-          </div>
-        )}
-        <AttendanceModal
-          date={modalDate}
-          onClose={() => setModalDate(null)}
-          onSelect={updateAttendance}
-        />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-800 dark:to-slate-900 pt-24 px-4 pb-8">
+        <div className="max-w-7xl mx-auto">
+          <Navbar
+            subjects={subjects}
+            setSubjects={setSubjects}
+            selectedSubject={selectedSubject}
+            setSelectedSubject={setSelectedSubject}
+          />
+          {selectedSubject && (
+            <div className="flex flex-col lg:flex-row mt-8 gap-8">
+              <Calendar
+                subject={selectedSubject}
+                attendance={attendance}
+                setModalDate={setModalDate}
+                currentMonth={currentMonth}
+                setCurrentMonth={setCurrentMonth}
+              />
+              <AttendanceChart data={getChartDataForSubject(selectedSubject)} />
+            </div>
+          )}
+          <AttendanceModal
+            date={modalDate}
+            onClose={() => setModalDate(null)}
+            onSelect={updateAttendance}
+          />
+        </div>
       </div>
     </>
   );
