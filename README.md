@@ -103,7 +103,7 @@ Planned enhancements to take it from helpful to unmissable:
 
 ## 👨‍💻 Author
 
-Made with ❤️ by [BITians]([https://www.linkedin.com/in/shauryaaditya99/])
+Made with ❤️ by [BITians]([https://www.linkedin.com/in/raj-aaryan-38923a25b])
 Feel free to connect or drop feedback!
 
 ---
@@ -111,13 +111,13 @@ Feel free to connect or drop feedback!
 ## 📬 Feedback & Contributions
 
 Open to suggestions and contributions!
-Submit an issue, fork the repo, or reach out via [LinkedIn]([https://www.linkedin.com/in/shauryaaditya99/]).
+Submit an issue, fork the repo, or reach out via [LinkedIn]([https://www.linkedin.com/in/raj-aaryan-38923a25b]).
 
 ---
 
 ## 📄 License
 
-MIT License © 2025 [Shaurya Aditya Verma](https://github.com/shauryaadi99)
+MIT License © 2025 [Shaurya Aditya Verma](https://github.com/rajayush16)
 
 ---
 
