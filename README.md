@@ -19,7 +19,6 @@ A centralized, interactive dashboard for everything that matters on campus:
 
 | 🔹 | Section | Description |
 |----|---------|-------------|
-| 📰 | **Newsroom** | Discover and register for college events, fests, and workshops — with photos and links. |
 | 🧳 | **Lost & Found** | Misplaced something? Report or find lost items easily, all in one place. |
 | 🚗 | **Carpooling Hub** | Share rides with fellow students — post your route, comment, and coordinate. |
 | 💼 | **Sell & Buy** | A mini OLX for students — trade books, gadgets, or anything useful on campus. |
@@ -71,10 +70,9 @@ No more lost info. No more chaos. Just connection.
 Want to run it locally? Clone the repo and fire it up:
 
 ```bash
-git clone https://github.com/yourusername/connecting-campuses.git
-cd connecting-campuses
+git clone https://github.com/Aaryan120/OneBITstop.git
 npm install
-npm start
+npm run dev
 ```
 
 > ⚙️ Built using `create-react-app` and optimized for desktop-first usage.
@@ -105,7 +103,7 @@ Planned enhancements to take it from helpful to unmissable:
 
 ## 👨‍💻 Author
 
-Made with ❤️ by [Shaurya Aditya Verma]([https://www.linkedin.com/in/shauryaaditya99/])
+Made with ❤️ by [BITians]([https://www.linkedin.com/in/shauryaaditya99/])
 Feel free to connect or drop feedback!
 
 ---
