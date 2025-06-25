@@ -48,179 +48,171 @@ const AttendancePreview = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-800 dark:to-slate-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-            My Attendance
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Stay on top of your academic journey with our comprehensive attendance tracking system. 
-            Monitor your progress, identify patterns, and ensure you never fall behind in your studies.
-          </p>
-        </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-800 dark:to-slate-900">
+      {/* Hero Section */}
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 via-purple-400/10 to-indigo-400/10"></div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+              📊 Attendance Manager
+            </h1>
+            <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              Track your academic progress with precision. Monitor attendance across all subjects, 
+              visualize your performance, and stay on top of your academic goals.
+            </p>
+          </div>
 
-        {/* Main Features Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
-        >
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 + index * 0.1 }}
-              whileHover={{ y: -5 }}
-              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50 group"
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <button
+              onClick={() => navigate('/attendance')}
+              className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden"
             >
-              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                {feature.icon}
-              </div>
-              <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                {feature.description}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
+              <span className="relative z-10">Start Tracking</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+            <button
+              onClick={() => navigate('/attendance')}
+              className="group relative px-8 py-4 bg-white dark:bg-gray-800 text-gray-800 dark:text-white rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
+            >
+              <span className="relative z-10">View Demo</span>
+              <div className="absolute inset-0 bg-gray-50 dark:bg-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+            </button>
+          </div>
+        </div>
+      </section>
 
-        {/* Statistics Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-xl border border-gray-200/50 dark:border-gray-700/50 mb-16"
-        >
-          <h3 className="text-2xl md:text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">
-            Key Features
+      {/* Features Section */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">
+            ✨ Key Features
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.1 + index * 0.1 }}
-                className="text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                viewport={{ once: true }}
+                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50 group"
               >
-                <div className="text-3xl mb-3">{stat.icon}</div>
-                <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                  {stat.value}
+                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  {feature.icon}
                 </div>
-                <p className="text-gray-600 dark:text-gray-300 font-medium">{stat.label}</p>
+                <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {feature.description}
+                </p>
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </div>
+      </section>
 
-        {/* Demo Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="grid lg:grid-cols-2 gap-12 items-center mb-16"
-        >
-          <div>
-            <h3 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-6">
-              Smart Attendance Management
+      {/* Statistics Section */}
+      <section className="py-16 bg-white/50 dark:bg-gray-800/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
+            <h3 className="text-2xl md:text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">
+              📈 Platform Statistics
             </h3>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-white text-sm">✓</span>
-                </div>
-                <p className="text-gray-600 dark:text-gray-300">Mark attendance for multiple subjects</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-white text-sm">✓</span>
-                </div>
-                <p className="text-gray-600 dark:text-gray-300">Visual calendar interface for easy tracking</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-white text-sm">✓</span>
-                </div>
-                <p className="text-gray-600 dark:text-gray-300">Detailed analytics and progress reports</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-white text-sm">✓</span>
-                </div>
-                <p className="text-gray-600 dark:text-gray-300">Secure data storage and real-time sync</p>
-              </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {stats.map((stat, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  viewport={{ once: true }}
+                  className="text-center"
+                >
+                  <div className="text-3xl mb-3">{stat.icon}</div>
+                  <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                    {stat.value}
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 font-medium">{stat.label}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
-          <div className="relative">
-            <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 rounded-2xl p-8 h-80 flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-6xl mb-4">📊</div>
-                <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">Attendance Dashboard</h4>
-                <p className="text-gray-600 dark:text-gray-400">Track, Analyze, Excel</p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        </div>
+      </section>
 
-        {/* Call to Action */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-center"
-        >
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 md:p-12 text-white">
-            <h3 className="text-2xl md:text-3xl font-bold mb-6">
-              Ready to Track Your Progress?
-            </h3>
-            <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
-              Join thousands of students who are already using our attendance tracking system 
-              to stay organized and excel in their academic journey.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {user ? (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/myattendance')}
-                  className="px-8 py-4 bg-white text-purple-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors duration-300 shadow-lg"
-                >
-                  View My Attendance
-                </motion.button>
-              ) : (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/myattendance')}
-                  className="px-8 py-4 bg-white text-purple-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors duration-300 shadow-lg"
-                >
-                  Login to Access
-                </motion.button>
-              )}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/myattendance')}
-                className="px-8 py-4 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-purple-600 transition-colors duration-300"
-              >
-                Learn More
-              </motion.button>
+      {/* Demo Section */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h3 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">
+                Smart Attendance Tracking
+              </h3>
+              <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+                Our intelligent attendance system helps you maintain accurate records across all your subjects. 
+                With visual analytics, you can easily identify patterns and improve your attendance percentage.
+              </p>
+              <ul className="space-y-4">
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <span className="text-green-500 mr-3">✓</span>
+                  Easy one-click attendance marking
+                </li>
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <span className="text-green-500 mr-3">✓</span>
+                  Real-time percentage calculations
+                </li>
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <span className="text-green-500 mr-3">✓</span>
+                  Export data for analysis
+                </li>
+                <li className="flex items-center text-gray-600 dark:text-gray-300">
+                  <span className="text-green-500 mr-3">✓</span>
+                  Mobile-responsive design
+                </li>
+              </ul>
+            </div>
+            <div className="relative">
+              <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 rounded-2xl p-8 h-80 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-6xl mb-4">📊</div>
+                  <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">Attendance Dashboard</h4>
+                  <p className="text-gray-600 dark:text-gray-400">Track, Analyze, Excel</p>
+                </div>
+              </div>
             </div>
           </div>
-        </motion.div>
-      </div>
-    </section>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            Take Control of Your Academic Journey
+          </h3>
+          <p className="text-xl text-blue-100 mb-8">
+            Join thousands of students who are already using our attendance manager to stay on track 
+            and achieve their academic goals.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => navigate('/attendance')}
+              className="px-8 py-4 bg-white text-blue-600 rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300"
+            >
+              Get Started Now
+            </button>
+            <button
+              onClick={() => navigate('/attendance')}
+              className="px-8 py-4 bg-transparent text-white border-2 border-white rounded-xl font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300"
+            >
+              Learn More
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 };
 

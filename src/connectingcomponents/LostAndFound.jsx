@@ -47,77 +47,65 @@ const LostAndFound = () => {
     { name: "Chargers", icon: "🔌", color: "from-indigo-500 to-indigo-600" }
   ];
 
-  const locations = [
-    { place: "Library", icon: "📖", description: "Study materials, ID cards" },
-    { place: "Labs", icon: "🔬", description: "Electronics, chargers" },
-    { place: "Auditorium", icon: "🎭", description: "Personal items, water bottles" },
-    { place: "Canteen", icon: "🍽️", description: "Wallets, phones, keys" }
+  const successStories = [
+    {
+      item: "Student ID Card",
+      found: "Library",
+      time: "2 hours",
+      story: "Lost my ID card during exam prep, found it the same day!"
+    },
+    {
+      item: "Laptop Charger",
+      found: "Cafeteria",
+      time: "1 day",
+      story: "Someone found my charger and contacted me immediately."
+    },
+    {
+      item: "Water Bottle",
+      found: "Sports Complex",
+      time: "30 minutes",
+      story: "Quick recovery thanks to the campus community!"
+    }
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-800 dark:to-slate-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-            🧳 BIT Lost & Found
-          </h1>
-          <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 dark:text-white mb-6">
-            Reconnect with What Matters
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-            Ever misplaced your ID card in the library, forgot your charger in the lab, or found a water bottle 
-            in the auditorium? At a campus as large and dynamic as BIT Mesra, things get lost — and found — every day. 
-            That's where the BIT Lost & Found platform steps in.
-          </p>
-        </motion.div>
-
-        {/* Main Description */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-xl border border-gray-200/50 dark:border-gray-700/50 mb-16"
-        >
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-6">
-                Built for the BIT Mesra Community
-              </h3>
-              <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-                Built exclusively for the BIT Mesra community, this platform helps students, faculty, and staff 
-                report lost items, post found items, and reconnect lost belongings with their rightful owners — 
-                quickly and respectfully.
-              </p>
-              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                From lost wallets to found jackets, misplaced notes to forgotten electronics — BIT Lost & Found 
-                is a simple, centralized place where your college community looks out for one another.
-              </p>
-            </div>
-            <div className="relative">
-              <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 rounded-2xl p-8 h-80 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">🧳</div>
-                  <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">Lost & Found Hub</h4>
-                  <p className="text-gray-600 dark:text-gray-400">Connect, Recover, Reunite</p>
-                </div>
-              </div>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-800 dark:to-slate-900">
+      {/* Hero Section */}
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-400/10 via-blue-400/10 to-purple-400/10"></div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+              🔍 Lost & Found
+            </h1>
+            <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              Lost something on campus? Found an item? Our community-driven platform helps 
+              reunite lost items with their owners quickly and safely.
+            </p>
           </div>
-        </motion.div>
 
-        {/* How It Helps Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mb-16"
-        >
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <button
+              onClick={() => navigate('/lost-and-found')}
+              className="group relative px-8 py-4 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden"
+            >
+              <span className="relative z-10">Report Lost Item</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-green-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+            <button
+              onClick={() => navigate('/lost-and-found')}
+              className="group relative px-8 py-4 bg-white dark:bg-gray-800 text-gray-800 dark:text-white rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
+            >
+              <span className="relative z-10">Browse Items</span>
+              <div className="absolute inset-0 bg-gray-50 dark:bg-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h3 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">
             🔍 How BIT Lost & Found Helps You
           </h3>
@@ -127,8 +115,8 @@ const LostAndFound = () => {
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 + index * 0.1 }}
-                whileHover={{ y: -5 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                viewport={{ once: true }}
                 className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50 group"
               >
                 <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
@@ -143,111 +131,102 @@ const LostAndFound = () => {
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </div>
+      </section>
 
-        {/* Common Items */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mb-16"
-        >
+      {/* Common Items */}
+      <section className="py-16 bg-white/50 dark:bg-gray-800/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h3 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">
-            Common Lost & Found Items
+            📦 Commonly Lost Items
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {commonItems.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
-                whileHover={{ scale: 1.05 }}
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50 group cursor-pointer"
-                onClick={() => navigate('/lostfound')}
-              >
-                <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
-                  {item.icon}
-                </div>
-                <h4 className="font-semibold text-gray-800 dark:text-white">
-                  {item.name}
-                </h4>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Common Locations */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mb-16"
-        >
-          <h3 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">
-            Common Locations
-          </h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {locations.map((location, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 + index * 0.1 }}
-                whileHover={{ y: -5 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                viewport={{ once: true }}
                 className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50 group"
               >
                 <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                  {location.icon}
+                  {item.icon}
                 </div>
                 <h4 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
-                  {location.place}
+                  {item.name}
                 </h4>
+                <div className={`w-full h-2 bg-gradient-to-r ${item.color} rounded-full mb-4`}></div>
                 <p className="text-gray-600 dark:text-gray-300">
-                  {location.description}
+                  Frequently lost on campus
                 </p>
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </div>
+      </section>
 
-        {/* Call to Action */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="text-center"
-        >
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 md:p-12 text-white">
-            <h3 className="text-2xl md:text-3xl font-bold mb-6">
-              Let's Make BIT Mesra a Place Where Nothing Truly Stays Lost
-            </h3>
-            <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
-              Join the BIT community in helping each other recover lost items and reunite found belongings 
-              with their rightful owners.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/lostfound')}
-                className="px-8 py-4 bg-white text-purple-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors duration-300 shadow-lg"
+      {/* Success Stories */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">
+            🎉 Success Stories
+          </h3>
+          <div className="grid md:grid-cols-3 gap-8">
+            {successStories.map((story, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                viewport={{ once: true }}
+                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50"
               >
-                Report Lost Item
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/lostfound')}
-                className="px-8 py-4 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-purple-600 transition-colors duration-300"
-              >
-                Post Found Item
-              </motion.button>
-            </div>
+                <div className="text-center mb-6">
+                  <div className="text-3xl mb-2">✅</div>
+                  <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-1">
+                    {story.item}
+                  </h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Found in {story.found} • {story.time}
+                  </p>
+                </div>
+                <p className="text-gray-600 dark:text-gray-300 text-center italic">
+                  "{story.story}"
+                </p>
+              </motion.div>
+            ))}
           </div>
-        </motion.div>
-      </div>
-    </section>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-16 bg-gradient-to-r from-green-600 to-blue-600">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            Help Someone Today
+          </h3>
+          <p className="text-xl text-green-100 mb-8">
+            Whether you've lost something or found an item, our community is here to help. 
+            Every post brings us closer to reuniting items with their owners.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => navigate('/lost-and-found')}
+              className="px-8 py-4 bg-white text-green-600 rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300"
+            >
+              Report Lost Item
+            </button>
+            <button
+              onClick={() => navigate('/lost-and-found')}
+              className="px-8 py-4 bg-transparent text-white border-2 border-white rounded-xl font-semibold hover:bg-white hover:text-green-600 transition-all duration-300"
+            >
+              Browse Found Items
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 };
 

@@ -184,27 +184,18 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
           {/* About Section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="lg:col-span-1"
-          >
+          <div className="lg:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-4">
               <img src="/logo.png" alt="OneBITstop Logo" className="h-10 w-auto" />
             </Link>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Empowering students, digitally ✨
             </p>
-          </motion.div>
+          </div>
 
           {/* Links Sections */}
           <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+            <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Product</h3>
               <ul className="space-y-3">
                 {footerLinks.product.map((link) => (
@@ -215,12 +206,8 @@ const Footer = () => {
                   </li>
                 ))}
               </ul>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
+            </div>
+            <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Support</h3>
               <ul className="space-y-3">
                 {footerLinks.support.map((link) => (
@@ -231,12 +218,8 @@ const Footer = () => {
                   </li>
                 ))}
               </ul>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
+            </div>
+            <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Legal</h3>
               <ul className="space-y-3">
                 {footerLinks.legal.map((link) => (
@@ -247,44 +230,36 @@ const Footer = () => {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
           </div>
         </div>
 
         {/* Bottom Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center"
-        >
+        <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-center md:text-left mb-4 md:mb-0">
             &copy; {currentYear} OneBITstop. All rights reserved. - Made with ❤️ by BITians for BITians
           </p>
           <div className="flex items-center space-x-4">
             {socialProfiles.map((platform, index) => (
-              <motion.button
+              <button
                 key={platform.id}
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 300 }}
                 onClick={() => handleProfileClick(platform)}
-                className="p-2 rounded-full bg-gray-200/50 dark:bg-gray-700/50 hover:bg-gray-300/70 dark:hover:bg-gray-600/70"
+                className="p-2 rounded-full bg-gray-200/50 dark:bg-gray-700/50 hover:bg-gray-300/70 dark:hover:bg-gray-600/70 transition-all duration-200"
                 aria-label={`Visit our ${platform.name}`}
               >
                 <platform.icon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-              </motion.button>
+              </button>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Pop-up for platform selection */}
       {selectedPlatform && (
         <motion.div
-          initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-          animate={{ opacity: 1, backdropFilter: 'blur(8px)' }}
-          exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
           onClick={closePopup}
         >
@@ -305,15 +280,14 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white text-center">Select a Profile</h3>
             <div className="space-y-3">
               {selectedPlatform.profiles.map((profile) => (
-                <motion.button
+                <button
                   key={profile.id}
-                  whileHover={{ scale: 1.03 }}
                   onClick={() => handleProfileSelect(profile)}
                   className="w-full text-left p-3 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
                   <span className="font-semibold text-gray-800 dark:text-white">{profile.name}</span>
                   {profile.role && <p className="text-sm text-gray-500 dark:text-gray-400">{profile.role}</p>}
-                </motion.button>
+                </button>
               ))}
             </div>
           </motion.div>
@@ -323,9 +297,9 @@ const Footer = () => {
       {/* Pop-up for profile details */}
       {selectedProfile && (
         <motion.div
-          initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-          animate={{ opacity: 1, backdropFilter: 'blur(8px)' }}
-          exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
           onClick={closePopup}
         >
@@ -343,47 +317,33 @@ const Footer = () => {
             >
               <X className="h-5 w-5" />
             </button>
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: {
-                    staggerChildren: 0.1
-                  }
-                }
-              }}
-              className="flex flex-col items-center text-center"
-            >
-              <motion.img
-                variants={itemVariants}
+            <div className="flex flex-col items-center text-center">
+              <img
                 src={`https://ui-avatars.com/api/?name=${selectedProfile.name.replace(/\s/g, '+')}&background=random`}
                 alt={selectedProfile.name}
                 className="w-24 h-24 rounded-full mb-4 border-4 border-gray-200 dark:border-gray-700"
               />
-              <motion.h3 variants={itemVariants} className="text-2xl font-bold text-gray-900 dark:text-white">{selectedProfile.name}</motion.h3>
-              {selectedProfile.role && <motion.p variants={itemVariants} className="text-md text-gray-600 dark:text-gray-400">{selectedProfile.role} @ {selectedProfile.company}</motion.p>}
-              {selectedProfile.handle && <motion.p variants={itemVariants} className="text-md text-gray-500 dark:text-gray-400">{selectedProfile.handle}</motion.p>}
-              <motion.p variants={itemVariants} className="text-sm text-gray-500 dark:text-gray-400 mt-1">{selectedProfile.location}</motion.p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{selectedProfile.name}</h3>
+              {selectedProfile.role && <p className="text-md text-gray-600 dark:text-gray-400">{selectedProfile.role} @ {selectedProfile.company}</p>}
+              {selectedProfile.handle && <p className="text-md text-gray-500 dark:text-gray-400">{selectedProfile.handle}</p>}
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{selectedProfile.location}</p>
               
-              <motion.div variants={itemVariants} className="my-6 w-full border-t border-gray-200 dark:border-gray-700" />
+              <div className="my-6 w-full border-t border-gray-200 dark:border-gray-700" />
               
               {selectedProfile.about && (
-                <motion.div variants={itemVariants} className="text-left w-full mb-4">
+                <div className="text-left w-full mb-4">
                   <h4 className="font-semibold mb-1 text-gray-800 dark:text-white">About</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-300">{selectedProfile.about}</p>
-                </motion.div>
+                </div>
               )}
               {selectedProfile.experience && (
-                <motion.div variants={itemVariants} className="text-left w-full mb-4">
+                <div className="text-left w-full mb-4">
                   <h4 className="font-semibold mb-1 text-gray-800 dark:text-white">Experience</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-300">{selectedProfile.experience}</p>
-                </motion.div>
+                </div>
               )}
               {selectedProfile.skills && (
-                <motion.div variants={itemVariants} className="text-left w-full mb-4">
+                <div className="text-left w-full mb-4">
                   <h4 className="font-semibold mb-1 text-gray-800 dark:text-white">Skills</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedProfile.skills.map((skill, index) => (
@@ -392,46 +352,10 @@ const Footer = () => {
                       </span>
                     ))}
                   </div>
-                </motion.div>
-              )}
-              {selectedProfile.followers && (
-                <motion.div variants={itemVariants} className="text-left w-full mb-4">
-                  <h4 className="font-semibold mb-1 text-gray-800 dark:text-white">Followers</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{selectedProfile.followers}</p>
-                </motion.div>
-              )}
-              {selectedProfile.content && (
-                <motion.div variants={itemVariants} className="text-left w-full mb-4">
-                  <h4 className="font-semibold mb-1 text-gray-800 dark:text-white">Content</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{selectedProfile.content}</p>
-                </motion.div>
-              )}
-              {selectedProfile.highlights && (
-                <motion.div variants={itemVariants} className="text-left w-full mb-4">
-                  <h4 className="font-semibold mb-1 text-gray-800 dark:text-white">Highlights</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedProfile.highlights.map((highlight, index) => (
-                      <span key={index} className="px-2 py-1 bg-pink-100 text-pink-800 text-xs rounded-full">
-                        {highlight}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-              {selectedProfile.repos && (
-                <motion.div variants={itemVariants} className="text-left w-full mb-4">
-                  <h4 className="font-semibold mb-1 text-gray-800 dark:text-white">Repositories</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{selectedProfile.repos}</p>
-                </motion.div>
-              )}
-              {selectedProfile.contributions && (
-                <motion.div variants={itemVariants} className="text-left w-full mb-4">
-                  <h4 className="font-semibold mb-1 text-gray-800 dark:text-white">Contributions</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{selectedProfile.contributions}</p>
-                </motion.div>
+                </div>
               )}
               {selectedProfile.topLanguages && (
-                <motion.div variants={itemVariants} className="text-left w-full mb-4">
+                <div className="text-left w-full mb-4">
                   <h4 className="font-semibold mb-1 text-gray-800 dark:text-white">Top Languages</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedProfile.topLanguages.map((lang, index) => (
@@ -440,10 +364,10 @@ const Footer = () => {
                       </span>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               )}
               {selectedProfile.featuredProjects && (
-                <motion.div variants={itemVariants} className="text-left w-full mb-4">
+                <div className="text-left w-full mb-4">
                   <h4 className="font-semibold mb-1 text-gray-800 dark:text-white">Featured Projects</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedProfile.featuredProjects.map((project, index) => (
@@ -452,45 +376,35 @@ const Footer = () => {
                       </span>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               )}
               {selectedProfile.theme && (
-                <motion.div variants={itemVariants} className="text-left w-full mb-4">
+                <div className="text-left w-full mb-4">
                   <h4 className="font-semibold mb-1 text-gray-800 dark:text-white">Theme</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-300">{selectedProfile.theme}</p>
-                </motion.div>
+                </div>
               )}
-              {selectedProfile.links && (
-                <motion.div variants={itemVariants} className="text-left w-full mb-4">
-                  <h4 className="font-semibold mb-1 text-gray-800 dark:text-white">Available Links</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedProfile.links.map((link, index) => (
-                      <span key={index} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                        {link}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              <motion.button
-                variants={itemVariants}
-                onClick={() => handleExternalLink(selectedProfile.link)}
-                className="mt-6 w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:shadow-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300"
-              >
-                View Full Profile
-              </motion.button>
-            </motion.div>
+              
+              <div className="flex gap-2 mt-6">
+                <button
+                  onClick={handleBackToPlatform}
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() => handleExternalLink(selectedProfile.link)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Visit Profile
+                </button>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       )}
     </footer>
   );
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 15 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 150, damping: 20 } }
 };
 
 export default Footer;
