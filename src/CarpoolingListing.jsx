@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Label } from "./components/ui/label";
 import { Input } from "./components/ui/input";
-import { cn } from "./lib/utils";
 import { useAuth } from "./context/AuthContext";
 import { USER_API_ENDPOINT } from "../constants";
 
 const Loader = ({ message = "Loading, please wait..." }) => (
-  <div className="fixed inset-0 flex flex-col justify-center items-center bg-black bg-opacity-80 z-50">
+  <div className="fixed inset-0 flex flex-col justify-center items-center bg-white/80 dark:bg-black/80 z-50">
     <svg
       className="animate-spin h-14 w-14 text-cyan-400"
       xmlns="http://www.w3.org/2000/svg"
@@ -127,21 +126,26 @@ export default function CarpoolingListing() {
   };
 
   return (
-    <div className="pt-24 px-4 sm:px-6 lg:px-8 bg-gray-50 min-h-screen mb-4 relative">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-          <h2 className="text-3xl font-bold text-slate-800">
+    <div className="relative min-h-screen flex flex-col items-center justify-start overflow-hidden bg-gradient-to-br from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-800 dark:to-slate-900 pt-24 px-4 sm:px-6 lg:px-8 pb-16">
+      {/* Decorative blurred shapes */}
+      <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-blue-400/20 to-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-300/10 to-blue-300/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div className="max-w-7xl w-full mx-auto">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-200/60 dark:border-gray-700/60 p-4 sm:p-6 mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white flex-1 mb-2 md:mb-0">
             🚗 Carpooling Board
           </h2>
-          <div className="flex items-center w-full sm:w-auto">
-            <label htmlFor="sort" className="mr-3 font-medium text-slate-700">
+          <div className="flex items-center w-full md:w-auto">
+            <label htmlFor="sort" className="mr-3 font-medium text-gray-700 dark:text-gray-300">
               Sort by Date:
             </label>
             <select
               id="sort"
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
-              className="border border-slate-300 rounded px-3 py-2 shadow-sm text-sm"
+              className="border border-gray-300 dark:border-gray-700 rounded px-3 py-2 shadow-sm text-sm bg-white/90 dark:bg-gray-800/80 text-gray-900 dark:text-white"
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>
@@ -152,18 +156,18 @@ export default function CarpoolingListing() {
         {loading ? (
           <Loader />
         ) : sortedPosts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {sortedPosts
               .filter((post) => post != null)
               .map((post) => (
                 <div
                   key={post._id}
-                  className="relative bg-white text-gray-900 rounded-2xl border border-slate-200 shadow-md p-5 hover:shadow-xl transition-transform duration-300 hover:scale-[1.02]"
+                  className="relative overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-gray-200/60 dark:border-gray-700/60 flex flex-col w-full h-[340px] max-w-full p-0 transition-transform duration-300 hover:scale-105 hover:shadow-3xl group"
                 >
                   {user?.email && post.email === user.email && (
                     <button
                       onClick={() => handleDeletePost(post._id)}
-                      className="absolute top-3 right-3 text-red-600 hover:text-red-800"
+                      className="absolute top-3 right-3 text-red-600 hover:text-red-800 z-10"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -181,72 +185,58 @@ export default function CarpoolingListing() {
                       </svg>
                     </button>
                   )}
-
-                  <div className="mb-3 text-sm text-slate-600">
-                    <strong>User:</strong> {post.email || "Anonymous"}
-                  </div>
-
-                  <p className="mb-1">
-                    <strong>From:</strong> {post.pickupLocation}
-                  </p>
-                  <p className="mb-1">
-                    <strong>To:</strong> {post.dropLocation}
-                  </p>
-                  <p className="mb-1">
-                    <strong>Date:</strong>{" "}
-                    {new Date(post.travelDate).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </p>
-
-                  <p className="mb-1">
-                    <strong>Time:</strong> {post.departureTime}
-                  </p>
-                  <p className="mb-1">
-                    <strong>Seats:</strong> {post.seatsAvailable}
-                  </p>
-
-                  {post.additionalNotes && (
-                    <p className="text-slate-500 italic mt-2 text-sm">
-                      "{post.additionalNotes}"
-                    </p>
-                  )}
-
-                  <a
-                    href={`https://wa.me/${post.phoneNumber}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title="Chat on WhatsApp"
-                    className="absolute bottom-3 right-3 hover:scale-110 transition-transform"
-                  >
-                    <svg
-                      height="32"
-                      width="32"
-                      viewBox="0 0 58 58"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill="#2CB742"
-                        d="M0,58l4.988-14.963C2.457,38.78,1,33.812,1,28.5C1,12.76,13.76,0,29.5,0S58,12.76,58,28.5 S45.24,57,29.5,57c-4.789,0-9.299-1.187-13.26-3.273L0,58z"
-                      />
-                      <path
-                        fill="#FFFFFF"
-                        d="M47.683,37.985c-1.316-2.487-6.169-5.331-6.169-5.331c-1.098-0.626-2.423-0.696-3.049,0.42
+                  <div className="flex-1 flex flex-col justify-between p-6 overflow-hidden">
+                    <div>
+                      <div className="mb-2 text-xs text-gray-500 dark:text-gray-400 truncate">
+                        <strong>User:</strong> {post.email || "Anonymous"}
+                      </div>
+                      <p className="mb-1 text-gray-900 dark:text-white"><strong>From:</strong> {post.pickupLocation}</p>
+                      <p className="mb-1 text-gray-900 dark:text-white"><strong>To:</strong> {post.dropLocation}</p>
+                      <p className="mb-1 text-gray-900 dark:text-white"><strong>Date:</strong> {new Date(post.travelDate).toLocaleDateString("en-GB", {day: "2-digit", month: "short", year: "numeric"})}</p>
+                      <p className="mb-1 text-gray-900 dark:text-white"><strong>Time:</strong> {post.departureTime}</p>
+                      <p className="mb-1 text-gray-900 dark:text-white"><strong>Seats:</strong> {post.seatsAvailable}</p>
+                      {post.additionalNotes && (
+                        <p className="text-gray-700 dark:text-gray-200 italic mt-2 text-sm line-clamp-2">"{post.additionalNotes}"</p>
+                      )}
+                    </div>
+                    <div className="flex items-end justify-end mt-4">
+                      <a
+                        href={`https://wa.me/${post.phoneNumber}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Chat on WhatsApp"
+                        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700 rounded-full p-3 shadow-lg transition-transform duration-200 hover:scale-110 flex items-center justify-center"
+                        style={{ width: '48px', height: '48px' }}
+                        aria-label="Contact on WhatsApp"
+                      >
+                        <svg
+                          height="24"
+                          width="24"
+                          viewBox="0 0 58 58"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill="#2CB742"
+                            d="M0,58l4.988-14.963C2.457,38.78,1,33.812,1,28.5C1,12.76,13.76,0,29.5,0S58,12.76,58,28.5 S45.24,57,29.5,57c-4.789,0-9.299-1.187-13.26-3.273L0,58z"
+                          />
+                          <path
+                            fill="#FFFFFF"
+                            d="M47.683,37.985c-1.316-2.487-6.169-5.331-6.169-5.331c-1.098-0.626-2.423-0.696-3.049,0.42
        c0,0-1.577,1.891-1.978,2.163c-1.832,1.241-3.529,1.193-5.242-0.52l-3.981-3.981l-3.981-3.981
        c-1.713-1.713-1.761-3.41-0.52-5.242c0.272-0.401,2.163-1.978,2.163-1.978c1.116-0.627,1.046-1.951,0.42-3.049
        c0,0-2.844-4.853-5.331-6.169c-1.058-0.56-2.357-0.364-3.203,0.482l-1.758,1.758c-5.577,5.577-2.831,11.873,2.746,17.45
        l5.097,5.097l5.097,5.097c5.577,5.577,11.873,8.323,17.45,2.746l1.758-1.758C48.048,40.341,48.243,39.042,47.683,37.985z"
-                      />
-                    </svg>
-                  </a>
+                          />
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
                 </div>
               ))}
           </div>
         ) : (
-          <p className="text-center text-gray-500 text-sm mt-10">
+          <p className="text-center text-gray-500 dark:text-gray-400 text-sm mt-10">
             No carpool posts available.
           </p>
         )}
@@ -275,14 +265,14 @@ export default function CarpoolingListing() {
 
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center px-4"
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
           onClick={() => setIsModalOpen(false)}
         >
           <div
-            className="bg-gray-900 rounded-2xl shadow-2xl p-6 w-full max-w-lg max-h-[95vh] overflow-y-auto text-gray-100 custom-scrollbar"
+            className="bg-white/90 dark:bg-gray-900/90 rounded-2xl shadow-2xl p-6 w-full max-w-lg max-h-[95vh] overflow-y-auto text-gray-900 dark:text-gray-100 custom-scrollbar border border-gray-200/60 dark:border-gray-700/60 backdrop-blur-md"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-2xl font-bold mb-5">
+            <h3 className="text-2xl font-bold mb-5 text-gray-900 dark:text-white text-center">
               🚗 Create a New Carpool Listing
             </h3>
 
@@ -325,15 +315,13 @@ export default function CarpoolingListing() {
                 },
               ].map(({ name, label, ...rest }) => (
                 <LabelInputContainer key={name}>
-                  <Label htmlFor={name}>{label}</Label>
+                  <Label htmlFor={name} className="text-gray-700 dark:text-gray-300">{label}</Label>
                   <Input
                     name={name}
                     value={newPost[name]}
                     onChange={handleInputChange}
                     required={label.includes("*")}
-                    className={`bg-gray-800 text-gray-100 placeholder-gray-400 border-gray-700 ${
-                      rest.readOnly ? "cursor-not-allowed text-gray-400" : ""
-                    }`}
+                    className={`bg-white/80 dark:bg-gray-900/60 text-gray-900 dark:text-white placeholder-gray-400 border border-gray-300 dark:border-gray-700 ${rest.readOnly ? "cursor-not-allowed text-gray-400" : ""}`}
                     {...rest}
                   />
                 </LabelInputContainer>
@@ -343,7 +331,7 @@ export default function CarpoolingListing() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-sm"
+                  className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 text-sm"
                 >
                   Cancel
                 </button>

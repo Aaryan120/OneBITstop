@@ -7,12 +7,12 @@ import { useAuth } from "./context/AuthContext";
 import { USER_API_ENDPOINT } from "../constants";
 
 export const Loader = () => (
-  <div className="flex flex-col justify-center items-center min-h-[40vh] space-y-4">
+  <div className="fixed inset-0 flex flex-col justify-center items-center bg-black/80 z-50">
     <div className="relative w-16 h-16">
       <div className="absolute w-full h-full border-4 border-t-transparent border-cyan-400 rounded-full animate-spin" />
       <div className="absolute inset-2 border-4 border-t-transparent border-indigo-400 rounded-full animate-spin-slow" />
     </div>
-    <p className="text-cyan-400 text-lg font-semibold tracking-wide animate-pulse">
+    <p className="text-cyan-300 text-lg font-semibold tracking-wide animate-pulse mt-4">
       Loading listings, please wait...
     </p>
   </div>
@@ -182,36 +182,243 @@ const SellBuyPage = () => {
   };
 
   return (
-    <div className="bg-black text-white min-h-screen p-4 flex flex-col md:flex-row py-24">
-      {/* Sell Button */}
+    <div className="relative min-h-screen flex flex-col items-center justify-start overflow-hidden bg-gradient-to-br from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-800 dark:to-slate-900">
+      {/* Decorative blurred shapes */}
+      <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-blue-400/20 to-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-300/10 to-blue-300/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-10 mt-32 text-center leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.08)] px-4">
+        Buy & Sell
+        <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">Marketplace for BITians</span>
+      </h1>
+
+      {/* Main content container with max-width and responsive padding */}
+      <div className="relative w-full min-h-[60vh] max-w-7xl mx-auto px-2 sm:px-4 md:px-6 flex flex-col">
+        {/* Filter bar above the grid, horizontal on desktop, stacked on mobile */}
+        <div className="w-full flex flex-col md:flex-row items-stretch md:items-center gap-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-200/60 dark:border-gray-700/60 p-4 sm:p-6 mb-8">
+          <div className="flex flex-col md:flex-row w-full gap-4 md:gap-4 md:items-center">
+            {/* Search input */}
+            <div className="w-full md:w-1/4 flex items-center">
+              <input
+                type="text"
+                placeholder="Search products..."
+                className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white/90 dark:bg-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-600 transition duration-300"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            {/* Category */}
+            <div className="w-full md:w-1/4 flex items-center">
+              <label className="mr-2 font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">Category:</label>
+              <select
+                className="w-full md:w-auto p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white/90 dark:bg-gray-800/80 text-gray-900 dark:text-white shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-600 transition duration-300"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option>All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+            {/* Price Range */}
+            <div className="w-full md:w-1/3 flex items-center">
+              <label className="mr-2 font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">Price Range:</label>
+              <input
+                type="range"
+                min="0"
+                max="25000"
+                value={priceRange}
+                onChange={(e) => setPriceRange(Number(e.target.value))}
+                className="w-full md:w-48 accent-blue-500"
+              />
+              <span className="ml-3 text-gray-700 dark:text-gray-300 text-sm whitespace-nowrap">₹0 - ₹{priceRange.toLocaleString()}</span>
+            </div>
+            {/* Reset All */}
+            <div className="w-full md:w-auto flex items-center justify-end">
+              <button
+                onClick={resetFilters}
+                className="text-sm underline text-red-400 hover:text-red-300 relative ml-auto"
+              >
+                Reset All
+                <BottomGradient />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Product Listing */}
+        <main className="flex-1 w-full px-0 sm:px-2 md:px-4 py-4 flex flex-col">
+          <div className="flex flex-col sm:flex-row sm:justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold mb-2 sm:mb-0 text-gray-900 dark:text-white">
+              {loading
+                ? "Loading listings..."
+                : `Showing ${sortedProducts.length} product(s)`}
+            </h2>
+            <select
+              className="bg-white/90 dark:bg-gray-800/80 p-2 rounded border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+            >
+              <option>Newest First</option>
+              <option>Price: Low to High</option>
+              <option>Price: High to Low</option>
+            </select>
+          </div>
+
+          {error && <p className="text-red-500 mb-4">{error}</p>}
+
+          {loading ? (
+            <Loader />
+          ) : (
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
+              {sortedProducts.map((product) => (
+                <article
+                  key={product._id}
+                  className="relative overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-gray-200/60 dark:border-gray-700/60 flex flex-col w-[370px] h-[420px] max-w-full p-0 transition-transform duration-300 hover:scale-105 hover:shadow-3xl group"
+                >
+                  {product.imageSrc && (
+                    <img
+                      src={product.imageSrc}
+                      alt={product.title}
+                      className="object-cover w-full h-48 rounded-t-3xl"
+                      loading="lazy"
+                    />
+                  )}
+                  <div className="flex-1 flex flex-col justify-between p-6 overflow-hidden">
+                    <div>
+                      <h3 className="text-xl font-bold mb-2 truncate drop-shadow-lg text-gray-900 dark:text-white leading-tight">
+                        {product.title}
+                      </h3>
+                      <p className="text-blue-500 dark:text-blue-400 font-bold">₹{product.price}</p>
+                      <p className="mb-2 text-sm font-medium opacity-90 text-gray-700 dark:text-gray-200 leading-relaxed line-clamp-2">
+                        {product.description}
+                      </p>
+                      <p className="text-xs font-mono opacity-80 mt-2 break-words text-gray-500 dark:text-gray-400">
+                        Posted by: {product.email}
+                      </p>
+                    </div>
+                    <div className="flex items-end justify-end gap-2 mt-4">
+                      {product.whatsappNumber && (
+                        <a
+                          href={`https://wa.me/${product.whatsappNumber}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700 rounded-full p-3 shadow-lg transition-transform duration-200 hover:scale-110 flex items-center justify-center"
+                          style={{ width: '48px', height: '48px' }}
+                          aria-label="Contact on WhatsApp"
+                        >
+                          <svg
+                            height="24"
+                            width="24"
+                            viewBox="0 0 58 58"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fill="#2CB742"
+                              d="M0,58l4.988-14.963C2.457,38.78,1,33.812,1,28.5C1,12.76,13.76,0,29.5,0S58,12.76,58,28.5 S45.24,57,29.5,57c-4.789,0-9.299-1.187-13.26-3.273L0,58z"
+                            />
+                            <path
+                              fill="#FFFFFF"
+                              d="M47.683,37.985c-1.316-2.487-6.169-5.331-6.169-5.331c-1.098-0.626-2.423-0.696-3.049,0.42
+                  c0,0-1.577,1.891-1.978,2.163c-1.832,1.241-3.529,1.193-5.242-0.52l-3.981-3.981l-3.981-3.981
+                  c-1.713-1.713-1.761-3.41-0.52-5.242c0.272-0.401,2.163-1.978,2.163-1.978c1.116-0.627,1.046-1.951,0.42-3.049
+                  c0,0-2.844-4.853-5.331-6.169c-1.058-0.56-2.357-0.364-3.203,0.482l-1.758,1.758c-5.577,5.577-2.831,11.873,2.746,17.45
+                  l5.097,5.097l5.097,5.097c5.577,5.577,11.873,8.323,17.45,2.746l1.758-1.758C48.048,40.341,48.243,39.042,47.683,37.985z"
+                            />
+                          </svg>
+                        </a>
+                      )}
+                      {user?.email === product.email && (
+                        <button
+                          onClick={async () => {
+                            try {
+                              await axios.delete(
+                                `${USER_API_ENDPOINT}/api/sellbuys/listings/${product._id}`,
+                                {
+                                  withCredentials: true,
+                                }
+                              );
+                              setMarketItems((prev) =>
+                                prev.filter((item) => item._id !== product._id)
+                              );
+                            } catch {
+                              alert("Failed to delete listing.");
+                            }
+                          }}
+                          className="text-red-500 hover:text-red-400 z-10 ml-2"
+                          title="Delete listing"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </section>
+          )}
+        </main>
+      </div>
+
+      {/* Floating Add Listing Button */}
       <button
         onClick={handleSellClick}
-        className="fixed bottom-6 right-6 z-50 bg-green-600 hover:bg-green-700 transition-all duration-300 text-white py-2 px-4 rounded-full shadow-lg"
+        className="fixed bottom-8 right-8 bg-gradient-to-br from-green-600 to-blue-600 text-white rounded-full p-5 shadow-2xl hover:from-blue-600 hover:to-green-700 transition-all duration-300 z-30 animate-float"
+        title="Add New Listing"
+        aria-label="Add new listing"
       >
-        + Sell / Add Listing
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-7 w-7"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
       </button>
 
       {/* Modal */}
       {showForm && user && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center px-4 sm:px-6"
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center px-4 sm:px-6"
           onClick={() => setShowForm(false)}
         >
           <div
-            className="bg-gray-900 rounded-2xl shadow-2xl p-4 sm:p-6 w-full max-w-md sm:max-w-lg max-h-[95vh] flex flex-col text-gray-100 custom-scrollbar"
+            className="bg-white/90 dark:bg-gray-900/90 rounded-2xl shadow-2xl p-4 sm:p-6 w-full max-w-md sm:max-w-lg max-h-[95vh] flex flex-col text-gray-100 custom-scrollbar border border-gray-200/60 dark:border-gray-700/60 backdrop-blur-md"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-xl sm:text-2xl font-bold mb-5 text-white">
+            <h2 className="text-xl sm:text-2xl font-bold mb-5 text-gray-900 dark:text-white text-center">
               🛍️ Add New Listing
             </h2>
-
             <form
               onSubmit={handleSubmit}
               className="space-y-5 overflow-y-auto flex-grow pr-2"
               style={{ maxHeight: "calc(95vh - 120px)" }}
             >
               <LabelInputContainer>
-                <Label htmlFor="title" className="text-gray-300">
+                <Label htmlFor="title" className="text-gray-700 dark:text-gray-300">
                   Title*
                 </Label>
                 <Input
@@ -220,12 +427,11 @@ const SellBuyPage = () => {
                   onChange={handleInputChange}
                   required
                   placeholder="Listing title"
-                  className="bg-gray-800 text-gray-100"
+                  className="bg-white/80 dark:bg-gray-900/60 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700"
                 />
               </LabelInputContainer>
-
               <LabelInputContainer>
-                <Label htmlFor="price" className="text-gray-300">
+                <Label htmlFor="price" className="text-gray-700 dark:text-gray-300">
                   Price (₹)*
                 </Label>
                 <Input
@@ -234,12 +440,11 @@ const SellBuyPage = () => {
                   onChange={handleInputChange}
                   required
                   placeholder="e.g., 1000"
-                  className="bg-gray-800 text-gray-100"
+                  className="bg-white/80 dark:bg-gray-900/60 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700"
                 />
               </LabelInputContainer>
-
               <LabelInputContainer>
-                <Label htmlFor="category" className="text-gray-300">
+                <Label htmlFor="category" className="text-gray-700 dark:text-gray-300">
                   Category*
                 </Label>
                 <Input
@@ -248,20 +453,15 @@ const SellBuyPage = () => {
                   onChange={handleInputChange}
                   required
                   placeholder="e.g., Electronics"
-                  className="bg-gray-800 text-gray-100"
+                  className="bg-white/80 dark:bg-gray-900/60 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700"
                 />
               </LabelInputContainer>
-
               <LabelInputContainer>
-                <Label
-                  htmlFor="photo"
-                  className="text-sm font-semibold text-gray-300 mb-2 block"
-                >
+                <Label htmlFor="photo" className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 block">
                   Upload Image*
                 </Label>
-
                 <label htmlFor="photo" className="w-full cursor-pointer">
-                  <div className="flex items-center justify-center w-full p-4 bg-gray-800 text-gray-300 border border-gray-600 rounded-lg shadow-sm hover:bg-gray-700 transition">
+                  <div className="flex items-center justify-center w-full p-4 bg-white/80 dark:bg-gray-900/60 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition">
                     <div className="flex flex-col items-center space-y-2">
                       <svg
                         className="w-8 h-8 text-blue-400"
@@ -282,7 +482,6 @@ const SellBuyPage = () => {
                     </div>
                   </div>
                 </label>
-
                 <input
                   id="photo"
                   type="file"
@@ -294,23 +493,21 @@ const SellBuyPage = () => {
                   }}
                   className="hidden"
                 />
-
                 {imageFile && (
                   <div className="mt-3">
-                    <p className="text-xs text-gray-400 mb-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                       Selected image:
                     </p>
                     <img
                       src={URL.createObjectURL(imageFile)}
                       alt="Preview"
-                      className="w-full h-48 object-cover rounded border border-gray-600"
+                      className="w-full h-48 object-cover rounded border border-gray-300 dark:border-gray-700"
                     />
                   </div>
                 )}
               </LabelInputContainer>
-
               <LabelInputContainer>
-                <Label htmlFor="description" className="text-gray-300">
+                <Label htmlFor="description" className="text-gray-700 dark:text-gray-300">
                   Description
                 </Label>
                 <textarea
@@ -318,13 +515,12 @@ const SellBuyPage = () => {
                   value={newListing.description}
                   onChange={handleInputChange}
                   placeholder="Details about your listing"
-                  className="w-full p-2 rounded bg-gray-800 text-gray-100 border border-gray-700"
+                  className="w-full p-2 rounded bg-white/80 dark:bg-gray-900/60 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700"
                   rows={3}
                 />
               </LabelInputContainer>
-
               <LabelInputContainer>
-                <Label htmlFor="whatsappNumber" className="text-gray-300">
+                <Label htmlFor="whatsappNumber" className="text-gray-700 dark:text-gray-300">
                   WhatsApp Number
                 </Label>
                 <Input
@@ -332,12 +528,11 @@ const SellBuyPage = () => {
                   value={newListing.whatsappNumber}
                   onChange={handleInputChange}
                   placeholder="e.g., 919876543210"
-                  className="bg-gray-800 text-gray-100"
+                  className="bg-white/80 dark:bg-gray-900/60 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700"
                 />
               </LabelInputContainer>
-
               <LabelInputContainer>
-                <Label htmlFor="userEmail" className="text-gray-300">
+                <Label htmlFor="userEmail" className="text-gray-700 dark:text-gray-300">
                   Your Email
                 </Label>
                 <Input
@@ -345,21 +540,20 @@ const SellBuyPage = () => {
                   type="email"
                   value={user?.email || ""}
                   readOnly
-                  className="cursor-not-allowed bg-gray-700 text-gray-400"
+                  className="cursor-not-allowed bg-white/80 dark:bg-gray-900/60 text-gray-400 border border-gray-300 dark:border-gray-700"
                 />
               </LabelInputContainer>
-
               <div className="flex justify-end gap-3 pt-6">
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm font-medium"
+                  className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 text-sm font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-md bg-green-600 hover:bg-green-700 text-white text-sm font-medium"
+                  className="px-4 py-2 rounded-md bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white text-sm font-medium shadow-lg hover:brightness-110 transition"
                 >
                   Submit
                 </button>
@@ -368,175 +562,6 @@ const SellBuyPage = () => {
           </div>
         </div>
       )}
-
-      {/* Sidebar Filters */}
-      <div className="md:w-1/5 w-full md:pr-6 mb-4 md:mb-0">
-        <div className="sticky top-4 space-y-4 bg-gray-900 p-4 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold">Filters</h2>
-          <button
-            onClick={resetFilters}
-            className="text-sm underline text-red-400 hover:text-red-300 relative"
-          >
-            Reset All
-            <BottomGradient />
-          </button>
-
-          <input
-            type="text"
-            placeholder="Search products..."
-            className="w-full p-2 bg-gray-800 rounded"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-
-          <div>
-            <label className="block mb-1">Category</label>
-            <select
-              className="w-full p-2 bg-gray-800 rounded"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option>All Categories</option>
-              {categories.map((cat) => (
-                <option key={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block mb-1">Price Range</label>
-            <input
-              type="range"
-              min="0"
-              max="25000"
-              value={priceRange}
-              onChange={(e) => setPriceRange(Number(e.target.value))}
-              className="w-full"
-            />
-            <div className="text-sm mt-1">
-              ₹0 - ₹{priceRange.toLocaleString()}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Product Listing */}
-      <div className="md:w-4/5 w-full">
-        <div className="flex flex-col sm:flex-row sm:justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold mb-2 sm:mb-0">
-            {loading
-              ? "Loading listings..."
-              : `Showing ${sortedProducts.length} product(s)`}
-          </h2>
-          <select
-            className="bg-gray-800 p-2 rounded"
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-          >
-            <option>Newest First</option>
-            <option>Price: Low to High</option>
-            <option>Price: High to Low</option>
-          </select>
-        </div>
-
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-
-        {loading ? (
-          <Loader />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedProducts.map((product) => (
-              <div
-                key={product._id}
-                className="relative bg-gray-900 rounded-lg shadow-md p-4 hover:scale-[1.02] transition-transform duration-300 hover:shadow-xl"
-              >
-                {/* 🗑 Delete Button - Top Right */}
-                {user?.email === product.email && (
-                  <button
-                    onClick={async () => {
-                      try {
-                        await axios.delete(
-                          `${USER_API_ENDPOINT}/api/sellbuys/listings/${product._id}`,
-                          {
-                            withCredentials: true,
-                          }
-                        );
-                        setMarketItems((prev) =>
-                          prev.filter((item) => item._id !== product._id)
-                        );
-                      } catch {
-                        alert("Failed to delete listing.");
-                      }
-                    }}
-                    className="absolute top-2 right-2 text-red-500 hover:text-red-400 z-10"
-                    title="Delete listing"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                )}
-                {product.imageSrc && (
-                  <img
-                    src={product.imageSrc}
-                    alt={product.title}
-                    className="w-full h-48 object-cover rounded"
-                  />
-                )}
-                <h3 className="text-lg font-semibold mt-2">{product.title}</h3>
-                <p className="text-blue-400 font-bold">₹{product.price}</p>
-                <p className="text-sm text-gray-300">{product.description}</p>
-                <p className="text-sm text-gray-300 mb-8">
-                  Posted by: {product.email}
-                </p>{" "}
-                {/* Give space at bottom */}
-                {/* 📲 WhatsApp Icon - Bottom Right */}
-                {product.whatsappNumber && (
-                  <a
-                    href={`https://wa.me/${product.whatsappNumber}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute bottom-3 right-3 text-green-400 hover:text-green-300"
-                    title="Contact on WhatsApp"
-                  >
-                    <svg
-                      height="24"
-                      width="24"
-                      viewBox="0 0 58 58"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill="#2CB742"
-                        d="M0,58l4.988-14.963C2.457,38.78,1,33.812,1,28.5C1,12.76,13.76,0,29.5,0S58,12.76,58,28.5 S45.24,57,29.5,57c-4.789,0-9.299-1.187-13.26-3.273L0,58z"
-                      />
-                      <path
-                        fill="#FFFFFF"
-                        d="M47.683,37.985c-1.316-2.487-6.169-5.331-6.169-5.331c-1.098-0.626-2.423-0.696-3.049,0.42
-                  c0,0-1.577,1.891-1.978,2.163c-1.832,1.241-3.529,1.193-5.242-0.52l-3.981-3.981l-3.981-3.981
-                  c-1.713-1.713-1.761-3.41-0.52-5.242c0.272-0.401,2.163-1.978,2.163-1.978c1.116-0.627,1.046-1.951,0.42-3.049
-                  c0,0-2.844-4.853-5.331-6.169c-1.058-0.56-2.357-0.364-3.203,0.482l-1.758,1.758c-5.577,5.577-2.831,11.873,2.746,17.45
-                  l5.097,5.097l5.097,5.097c5.577,5.577,11.873,8.323,17.45,2.746l1.758-1.758C48.048,40.341,48.243,39.042,47.683,37.985z"
-                      />
-                    </svg>
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 };

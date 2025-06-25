@@ -86,7 +86,6 @@ const SignupPage = () => {
       <Toaster />
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-800 dark:to-slate-900 flex items-center justify-center p-4">
         <div className="max-w-md w-full">
-          {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -99,15 +98,15 @@ const SignupPage = () => {
                   <span className="text-white font-bold text-xl">O</span>
                 </div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                OneBITstop
-              </h1>
+                  OneBITstop
+                </h1>
               </div>
             </Link>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Create your account</h2>
             <p className="text-gray-600 dark:text-gray-400">Join the BIT Mesra community</p>
           </motion.div>
 
-          {/* Signup Form */}
+          {/* Signup Form Card - matches LoginPage */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -201,13 +200,15 @@ const SignupPage = () => {
                         { key: 'uppercase', label: 'One uppercase letter', met: passwordStrength.uppercase },
                         { key: 'lowercase', label: 'One lowercase letter', met: passwordStrength.lowercase },
                         { key: 'number', label: 'One number', met: passwordStrength.number },
-                        { key: 'special', label: 'One special character', met: passwordStrength.special }
-                      ].map(({ key, label, met }) => (
-                        <div key={key} className="flex items-center space-x-2">
-                          <CheckCircle className={`h-4 w-4 ${met ? 'text-green-500' : 'text-gray-400'}`} />
-                          <span className={`text-xs ${met ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
-                            {label}
-                          </span>
+                        { key: 'special', label: 'One special character', met: passwordStrength.special },
+                      ].map(req => (
+                        <div key={req.key} className="flex items-center text-xs">
+                          {req.met ? (
+                            <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                          ) : (
+                            <span className="inline-block w-4 h-4 mr-2 border border-gray-300 dark:border-gray-600 rounded-full"></span>
+                          )}
+                          <span className={req.met ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}>{req.label}</span>
                         </div>
                       ))}
                     </div>
@@ -230,11 +231,7 @@ const SignupPage = () => {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className={`w-full pl-10 pr-12 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:border-transparent transition-all duration-200 ${
-                      formData.confirmPassword && formData.password !== formData.confirmPassword
-                        ? 'border-red-300 dark:border-red-600 focus:ring-red-500'
-                        : 'border-gray-300 dark:border-gray-600 focus:ring-purple-500 dark:focus:ring-blue-500'
-                    }`}
+                    className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 dark:focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Confirm your password"
                     required
                   />
@@ -246,85 +243,36 @@ const SignupPage = () => {
                     {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
-                {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">Passwords do not match</p>
-                )}
               </div>
 
               {/* Error Message */}
               {error && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl"
-                >
-                  <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
-                </motion.div>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <p className="text-red-600 text-sm">{error}</p>
+                </div>
               )}
 
               {/* Submit Button */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 type="submit"
-                disabled={loading || !isPasswordValid || formData.password !== formData.confirmPassword}
-                className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-blue-500 focus:ring-offset-2"
+                disabled={loading || !isPasswordValid}
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow-md hover:from-purple-600 hover:to-blue-600 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {loading ? (
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Creating account...</span>
-                  </div>
-                ) : (
-                  'Create account'
-                )}
-              </motion.button>
+                {loading ? 'Creating account...' : 'Create account'}
+              </button>
             </form>
 
-            {/* Additional Links */}
-            <div className="mt-6 space-y-4">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400">Already have an account?</span>
-              </div>
-            </div>
-
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="text-center"
-              >
+            {/* Link to Login */}
+            <div className="mt-6 text-center">
+              <span className="text-gray-600 dark:text-gray-400 text-sm">Already have an account?</span>
               <Link
                 to="/login"
-                  className="inline-flex items-center justify-center w-full py-3 px-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+                className="ml-2 text-purple-600 dark:text-blue-400 hover:text-purple-700 dark:hover:text-blue-300 font-medium text-sm transition-colors duration-200"
               >
-                  Sign in to existing account
+                Sign in to existing account
               </Link>
-              </motion.div>
             </div>
           </motion.div>
-
-          {/* Footer */}
-          {/* <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-center mt-8"
-          >
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              By creating an account, you agree to our{' '}
-              <Link to="/terms" className="text-purple-600 dark:text-blue-400 hover:underline">
-                Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link to="/privacy" className="text-purple-600 dark:text-blue-400 hover:underline">
-                Privacy Policy
-              </Link>
-            </p>
-          </motion.div> */}
         </div>
       </div>
     </>
