@@ -117,7 +117,7 @@ Submit an issue, fork the repo, or reach out via [LinkedIn]([https://www.linkedi
 
 ## 📄 License
 
-MIT License © 2025 [Shaurya Aditya Verma](https://github.com/rajayush16)
+MIT License © 2025 [Raj Aryan](https://github.com/Aaryan120)
 
 ---
 
