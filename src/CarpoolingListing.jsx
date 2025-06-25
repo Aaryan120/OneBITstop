@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { getAllCarpools, createCarpool, deleteCarpool } from "./services/operations/carpoolApi";
 import { Label } from "./components/ui/label";
 import { Input } from "./components/ui/input";
 import { useAuth } from "./context/AuthContext";
@@ -50,13 +50,22 @@ export default function CarpoolingListing() {
   });
 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(`${USER_API_ENDPOINT}/api/carpools`, { withCredentials: true })
-      .then((res) => setPosts(res.data))
-      .catch((err) => console.error("Error fetching carpools:", err.message))
-      .finally(() => setLoading(false));
+    async function fetchCarpools() {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getAllCarpools();
+        setPosts(data.data || []);
+      } catch (err) {
+        setError(err.message || "Failed to fetch carpools");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchCarpools();
   }, []);
 
   const sortedPosts = [...posts].sort((a, b) =>
@@ -72,23 +81,23 @@ export default function CarpoolingListing() {
 
   const handleDeletePost = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
-
+    setLoading(true);
+    setError(null);
     try {
-      await axios.delete(`${USER_API_ENDPOINT}/api/carpools/${postId}`, {
-        withCredentials: true,
-      });
+      await deleteCarpool(postId, user?.token);
       setPosts((prev) => prev.filter((p) => p._id !== postId));
     } catch (err) {
-      console.error(
-        "Failed to delete post:",
-        err.response?.data || err.message
-      );
+      setError(err.message || "Failed to delete the post");
       alert("Failed to delete the post. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
     const payload = {
       pickupLocation: newPost.from,
       dropLocation: newPost.to,
@@ -97,17 +106,10 @@ export default function CarpoolingListing() {
       seatsAvailable: parseInt(newPost.seatsAvailable, 10),
       additionalNotes: newPost.note,
       contactNumber: newPost.phoneNumber,
-      email: newPost.userEmail, // Match schema
+      email: newPost.userEmail,
     };
-
     try {
-      const res = await axios.post(
-        `${USER_API_ENDPOINT}/api/carpools`,
-        payload,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await createCarpool(payload, user?.token);
       setPosts([res.data, ...posts]);
       setIsModalOpen(false);
       setNewPost({
@@ -121,7 +123,9 @@ export default function CarpoolingListing() {
         phoneNumber: "919876543210",
       });
     } catch (err) {
-      console.error("Error creating post:", err.response?.data || err.message);
+      setError(err.message || "Error creating post");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -346,6 +350,8 @@ export default function CarpoolingListing() {
           </div>
         </div>
       )}
+
+      {error && <div className="text-red-500 text-center my-4">{error}</div>}
     </div>
   );
 }

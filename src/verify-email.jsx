@@ -1,11 +1,12 @@
 // import { useEffect, useState } from "react";
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { USER_API_ENDPOINT } from "../constants";
 import toast, { Toaster } from "react-hot-toast";
 
 import { useRef } from "react";
+import { verifyEmail } from "./services/operations/userApi";
 
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams();
@@ -19,26 +20,47 @@ export default function VerifyEmailPage() {
     didCallRef.current = true;
 
     if (!token) {
-      console.warn("⚠️ No token found in query parameters.");
       setStatus("Invalid or missing token.");
-      toast.error("❌ Missing verification token.");
+      toast(
+        "Missing verification token.",
+        {
+          type: "error",
+          duration: 3000,
+          position: "bottom-right",
+          icon: "❌",
+        }
+      );
       return;
     }
 
     const verifyToken = async () => {
       try {
-        const response = await axios.get(
-          `${USER_API_ENDPOINT}/api/user/verify-email`,
-          { params: { token } }
+        const response = await verifyEmail(token);
+        setStatus(response?.data?.message || "Email verified successfully!");
+        toast(
+          "Email verified! You can now log in.",
+          {
+            type: "success",
+            duration: 3000,
+            position: "bottom-right",
+            icon: "🎉",
+          }
         );
-        setStatus(response.data.message || "Email verified successfully!");
-        toast.success("✅ Email verified! You can now log in.");
         setTimeout(() => navigate("/"), 3000);
       } catch (err) {
+        console.log("PRINTING ERROR:  ",err);
         const message =
           err.response?.data?.message || "Verification failed. Try again.";
         setStatus(message);
-        toast.error("❌ Verification failed.");
+        toast(
+          "Verification failed.",
+          {
+            type: "error",
+            duration: 3000,
+            position: "bottom-right",
+            icon: "❌",
+          }
+        );
       }
     };
 

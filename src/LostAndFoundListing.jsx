@@ -4,8 +4,8 @@ import { Input } from "./components/ui/input";
 import { cn } from "./lib/utils";
 import { useAuth } from "./context/AuthContext";
 import { USER_API_ENDPOINT } from "../constants";
-import axios from "axios";
 import { getImageSrc } from "./SellBuyPage";
+import { getLostFoundItems, addLostFoundItem, deleteLostFoundItem } from "./services/operations/lostFoundApi";
 
 // Sample data
 const Loader = ({ message = "Loading, please wait..." }) => (
@@ -80,6 +80,7 @@ const LostAndFoundListing = () => {
   });
 
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (user?.email) {
@@ -101,18 +102,8 @@ const LostAndFoundListing = () => {
   };
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
-    if (
-      !newItem.title ||
-      !newItem.description ||
-      !newItem.contact ||
-      !newItem.whatsapp ||
-      !newItem.date
-    ) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-
+    setError(null);
+    setIsLoadingItems(true);
     try {
       const formData = new FormData();
       formData.append("title", newItem.title);
@@ -121,19 +112,7 @@ const LostAndFoundListing = () => {
       formData.append("whatsapp", newItem.whatsapp);
       formData.append("date", newItem.date);
       formData.append("file", imageFile);
-
-      const res = await axios.post(
-        `${USER_API_ENDPOINT}/api/l-f-items/`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      setItems((prevItems) => [...prevItems, res.data]);
+      await addLostFoundItem(formData, user?.token);
       setIsModalOpen(false);
       setImageFile(null);
       fetchItems();
@@ -146,22 +125,24 @@ const LostAndFoundListing = () => {
         date: "",
       });
     } catch (error) {
-      console.error("Failed to add item:", error);
-      alert("Error submitting item. Please try again.");
+      setError(error.message || "Error submitting item");
+    } finally {
+      setIsLoadingItems(false);
     }
   };
 
   const fetchItems = async () => {
     setIsLoadingItems(true);
+    setError(null);
     try {
-      const res = await axios.get(`${USER_API_ENDPOINT}/api/l-f-items/`);
-      const itemsWithImages = res.data.map((item) => ({
+      const res = await getLostFoundItems();
+      const itemsWithImages = res.map((item) => ({
         ...item,
         imageSrc: getImageSrc(item.photo),
       }));
       setItems(itemsWithImages);
     } catch (error) {
-      console.error("Failed to fetch items:", error);
+      setError(error.message || "Failed to fetch items");
     } finally {
       setIsLoadingItems(false);
     }
@@ -206,6 +187,20 @@ const LostAndFoundListing = () => {
     const month = String(d.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed
     const year = d.getFullYear();
     return `${day}-${month}-${year}`;
+  };
+
+  const handleDeleteItem = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+    setError(null);
+    setIsLoadingItems(true);
+    try {
+      await deleteLostFoundItem(id, user?.token);
+      fetchItems();
+    } catch (error) {
+      setError(error.message || "Failed to delete item");
+    } finally {
+      setIsLoadingItems(false);
+    }
   };
 
   return (
@@ -501,6 +496,8 @@ const LostAndFoundListing = () => {
                 </div>
               </div>
             )}
+
+            {error && <div className="text-red-500 text-center my-4">{error}</div>}
           </main>
         </div>
       </div>

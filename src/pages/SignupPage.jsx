@@ -4,13 +4,15 @@ import { useAuth } from '../context/AuthContext';
 import { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, User, CheckCircle } from 'lucide-react';
+import { registerUser } from '../services/operations/userApi';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
     fullname: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    phone: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -55,8 +57,6 @@ const SignupPage = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
-    // Validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
@@ -70,8 +70,14 @@ const SignupPage = () => {
     }
 
     try {
-      await signup(formData.email, formData.password, formData.fullname);
-      navigate('/');
+      await registerUser({
+        name: formData.fullname,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        phone: formData.phone || '',
+      });
+      navigate('/login');
     } catch (err) {
       setError(err.message || 'Signup failed. Please try again.');
     } finally {

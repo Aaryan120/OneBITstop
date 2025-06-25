@@ -5,6 +5,7 @@ import { Input } from "./components/ui/input";
 import { cn } from "./lib/utils";
 import { useAuth } from "./context/AuthContext";
 import { USER_API_ENDPOINT } from "../constants";
+import { getAllSellBuyListings, createSellBuyListing, deleteSellBuyListing } from "./services/operations/sellBuyApi";
 
 export const Loader = () => (
   <div className="fixed inset-0 flex flex-col justify-center items-center bg-black/80 z-50">
@@ -48,15 +49,13 @@ const SellBuyPage = () => {
   const fetchListings = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${USER_API_ENDPOINT}/api/sellbuys/listings`);
-
-      const listingsWithImages = res.data.map((item) => ({
+      setError(null);
+      const res = await getAllSellBuyListings();
+      const listingsWithImages = res.map((item) => ({
         ...item,
-        imageSrc: getImageSrc(item.photo), // generate src here
+        imageSrc: getImageSrc(item.photo),
       }));
-
-
-      setMarketItems(listingsWithImages); // update state
+      setMarketItems(listingsWithImages);
     } catch (err) {
       setError("Failed to load listings.");
     } finally {
@@ -109,46 +108,31 @@ const SellBuyPage = () => {
     setNewListing({ ...newListing, [e.target.name]: e.target.value });
   };
 
-  // Before submitting, format properly (example)
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setError(null);
+    setLoading(true);
     if (!imageFile) {
       alert("Please upload an image.");
+      setLoading(false);
       return;
     }
-
-    // Spinner Loader Component
-
     const formatWhatsApp = (num) => {
       const cleaned = num.replace(/\D/g, "");
       return cleaned.startsWith("91") ? cleaned : `91${cleaned}`;
     };
-
     const formData = new FormData();
     formData.append("title", newListing.title);
     formData.append("price", newListing.price);
     formData.append("category", newListing.category);
     formData.append("description", newListing.description);
-    formData.append(
-      "whatsappNumber",
-      formatWhatsApp(newListing.whatsappNumber)
-    );
+    formData.append("whatsappNumber", formatWhatsApp(newListing.whatsappNumber));
     formData.append("email", user.email);
     formData.append("file", imageFile);
     try {
-      const res = await axios.post(
-        `${USER_API_ENDPOINT}/api/sellbuys/listings`,
-        formData,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
+      const res = await createSellBuyListing(formData, user?.token);
       alert("Listing created successfully!");
-      setMarketItems((prev) => [res.data.data, ...prev]);
+      setMarketItems((prev) => [res.data, ...prev]);
       setShowForm(false);
       setNewListing({
         title: "",
@@ -159,17 +143,26 @@ const SellBuyPage = () => {
         email: user?.email || "",
       });
       setImageFile(null);
-      fetchListings(); // Refresh listings
+      fetchListings();
     } catch (error) {
-      console.error(
-        "Failed to submit listing:",
-        error.response?.data || error.message
-      );
-      alert(
-        `Failed to create listing. Reason: ${
-          error.response?.data?.error || "Unknown error"
-        }`
-      );
+      setError(error.message || "Failed to create listing.");
+      alert(`Failed to create listing. Reason: ${error.message || "Unknown error"}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteListing = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this listing?")) return;
+    setError(null);
+    setLoading(true);
+    try {
+      await deleteSellBuyListing(id, user?.token);
+      fetchListings();
+    } catch (error) {
+      setError(error.message || "Failed to delete listing.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -267,7 +260,7 @@ const SellBuyPage = () => {
             </select>
           </div>
 
-          {error && <p className="text-red-500 mb-4">{error}</p>}
+          {error && <div className="text-red-500 text-center my-4">{error}</div>}
 
           {loading ? (
             <Loader />
@@ -333,21 +326,7 @@ const SellBuyPage = () => {
                       )}
                       {user?.email === product.email && (
                         <button
-                          onClick={async () => {
-                            try {
-                              await axios.delete(
-                                `${USER_API_ENDPOINT}/api/sellbuys/listings/${product._id}`,
-                                {
-                                  withCredentials: true,
-                                }
-                              );
-                              setMarketItems((prev) =>
-                                prev.filter((item) => item._id !== product._id)
-                              );
-                            } catch {
-                              alert("Failed to delete listing.");
-                            }
-                          }}
+                          onClick={() => handleDeleteListing(product._id)}
                           className="text-red-500 hover:text-red-400 z-10 ml-2"
                           title="Delete listing"
                         >

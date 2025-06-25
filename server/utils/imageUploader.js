@@ -1,5 +1,5 @@
 //import cloudinary module
-const cloudinary = require("cloudinary").v2;
+import cloudinary from "cloudinary";
 
 async function uploadFileToCloudinary(file,folder,height,quality){
     const options = {folder};
@@ -22,4 +22,4 @@ async function uploadFileToCloudinary(file,folder,height,quality){
     }
 }
 
-module.exports = uploadFileToCloudinary;
+export default uploadFileToCloudinary;

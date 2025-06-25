@@ -3,8 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { cn } from "../lib/utils";
-import axios from "axios";
-import { USER_API_ENDPOINT } from "../../constants";
+import { registerUser, resendVerificationEmail } from '../services/operations/userApi';
 import toast from "react-hot-toast";
 
 export function SignupFormDemo({ setShowSignup }) {
@@ -40,59 +39,39 @@ export function SignupFormDemo({ setShowSignup }) {
 
   const resendVerification = async () => {
     try {
-      await axios.post(`${USER_API_ENDPOINT}/api/user/resend-verification`, {
-        email: formData.email,
-      });
-
-      toast.success("📧 Verification email resent. Check your inbox.");
+      await resendVerificationEmail({ email: formData.email });
+      toast.success('📧 Verification email resent. Check your inbox.');
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to resend verification email."
-      );
+      toast.error(error.message || 'Failed to resend verification email.');
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setAlert({ message: "", type: "" });
+    setAlert({ message: '', type: '' });
     setLoading(true);
-
     try {
-      const response = await axios.post(
-        `${USER_API_ENDPOINT}/api/user/register`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
+      await registerUser(formData);
       setAlert({
-        message:
-          response.data.message ||
-          "🎉 Account created! Please verify your email.",
-        type: "success",
+        message: '🎉 Account created! Please verify your email.',
+        type: 'success',
       });
-
-      toast.success("✅ Please verify your email to activate your account.");
+      toast.success('✅ Please verify your email to activate your account.');
     } catch (error) {
-      const message = error.response?.data?.message;
-      
-      if (message.includes("not verified")) {
-        // optionally show "Resend verification email" button
+      const message = error.message;
+      if (message && message.includes('not verified')) {
         setShowResend(true);
         setAlert({
-          message: "You are already registered but not verified.",
-          type: "warning",
+          message: 'You are already registered but not verified.',
+          type: 'warning',
         });
-      } else if (message.includes("verified")) {
+      } else if (message && message.includes('verified')) {
         setAlert({
-          message: "User already registered. Please log in.",
-          type: "info",
+          message: 'User already registered. Please log in.',
+          type: 'info',
         });
       } else {
-        setAlert({ message: "Signup failed. Try again.", type: "error" });
+        setAlert({ message: 'Signup failed. Try again.', type: 'error' });
       }
     } finally {
       setLoading(false);

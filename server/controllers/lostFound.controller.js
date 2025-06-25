@@ -1,4 +1,5 @@
 import LostFoundItem from "../models/LostFoundItem.model.js";
+import uploadFileToCloudinary from "../utils/imageUploader.js";
 
 // Add new lost/found item
 export const addItem = async (req, res) => {
@@ -19,12 +20,14 @@ export const addItem = async (req, res) => {
     }
 
     const file = req.file; // multer provides this
-    const photo = file
-      ? {
-          data: file.buffer,
-          contentType: file.mimetype,
-        }
-      : null;
+
+    if(!file) {
+      return res.status(400).json({ message: "Photo is required", success: false });
+    }
+
+    const imageDetails = await uploadFileToCloudinary(file,process.env.FOLDER_NAME);
+
+    
 
     const newItem = new LostFoundItem({
       title,
@@ -32,7 +35,7 @@ export const addItem = async (req, res) => {
       contact,
       whatsapp,
       date: itemDate,
-      photo,
+      photo: imageDetails.secure_url,
     });
 
     const savedItem = await newItem.save();

@@ -3,7 +3,7 @@ import Linkify from "react-linkify";
 import { Carousel, Card } from "./components/ui/apple-cards-carousel";
 import { Label } from "./components/ui/label";
 import { Input } from "./components/ui/input";
-import axios from "axios";
+import { getAllNewsroomEvents, createNewsroomEvent, updateNewsroomEvent, deleteNewsroomEvent } from "./services/operations/newsroomApi";
 import { USER_API_ENDPOINT } from "../constants";
 import { cn } from "./lib/utils";
 import { useAuth } from "./context/AuthContext";
@@ -59,6 +59,7 @@ const NewsroomListing = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imageURL, setImageURL] = useState(null);
+  const [error, setError] = useState(null);
 
   const [newEvent, setNewEvent] = useState({
     category: "",
@@ -87,29 +88,22 @@ const NewsroomListing = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
+      setError(null);
       try {
-        const res = await axios.get(
-          `${USER_API_ENDPOINT}/api/college-events/`,
-          {
-            withCredentials: true,
-          }
-        );
-
-        const mappedEvents = res.data.map((event) => ({
+        const res = await getAllNewsroomEvents();
+        const mappedEvents = res.map((event) => ({
           ...event,
           content: (
             <DummyContent description={event.description} photo={event.photo} />
           ),
         }));
-
         setEvents(mappedEvents);
       } catch (error) {
-        console.error("Error fetching events:", error);
+        setError(error.message || "Error fetching events");
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchEvents();
   }, []);
 
@@ -167,22 +161,8 @@ const NewsroomListing = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
-    if (
-      !newEvent.category ||
-      !newEvent.club ||
-      !newEvent.title ||
-      !newEvent.date
-    ) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-
-    if (!selectedFile) {
-      alert("Please upload an event image.");
-      return;
-    }
-
+    setError(null);
+    setIsLoading(true);
     try {
       const formData = new FormData();
       formData.append("file", selectedFile);
@@ -192,30 +172,10 @@ const NewsroomListing = () => {
       formData.append("date", newEvent.date);
       formData.append("email", newEvent.email);
       formData.append("description", newEvent.description);
-
-      const response = await axios.post(
-        `${USER_API_ENDPOINT}/api/college-events/`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      const savedEvent = {
-        ...response.data,
-        content: (
-          <DummyContent
-            description={response.data.description}
-            photo={response.data.photo}
-          />
-        ),
-      };
-
-      setEvents((prev) => [...prev, savedEvent]);
+      await createNewsroomEvent(formData, user?.token);
       setIsModalOpen(false);
+      setSelectedFile(null);
+      setImageURL(null);
       setNewEvent({
         category: "",
         club: "",
@@ -223,25 +183,43 @@ const NewsroomListing = () => {
         date: "",
         email: user?.email || "",
         description: "",
+        file: null,
       });
-      setImageURL(null);
-      setSelectedFile(null);
+      // Refresh events
+      const res = await getAllNewsroomEvents();
+      const mappedEvents = res.map((event) => ({
+        ...event,
+        content: (
+          <DummyContent description={event.description} photo={event.photo} />
+        ),
+      }));
+      setEvents(mappedEvents);
     } catch (error) {
-      alert(
-        error.response?.data?.message || error.message || "Failed to add event"
-      );
+      setError(error.message || "Error creating event");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleDeleteEvent = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this event?")) return;
+    setError(null);
+    setIsLoading(true);
     try {
-      await axios.delete(`${USER_API_ENDPOINT}/api/college-events/${id}`, {
-        withCredentials: true,
-      });
-      setEvents((prev) => prev.filter((event) => event._id !== id));
+      await deleteNewsroomEvent(id, user?.token);
+      // Refresh events
+      const res = await getAllNewsroomEvents();
+      const mappedEvents = res.map((event) => ({
+        ...event,
+        content: (
+          <DummyContent description={event.description} photo={event.photo} />
+        ),
+      }));
+      setEvents(mappedEvents);
     } catch (error) {
-      console.error("Delete failed", error);
-      alert("Failed to delete event");
+      setError(error.message || "Failed to delete event");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -260,6 +238,8 @@ const NewsroomListing = () => {
             <h2 className="text-2xl md:text-4xl font-extrabold text-center text-neutral-900 dark:text-white mb-4">
               College Newsroom 📰
             </h2>
+
+            {error && <div className="text-red-500 text-center my-4">{error}</div>}
 
             <div className="flex flex-col md:flex-row gap-8 px-4 md:px-6">
               {/* Sidebar Filters */}

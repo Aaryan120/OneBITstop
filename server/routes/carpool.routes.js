@@ -9,12 +9,12 @@ import isAuthenticated from '../middlewares/isAuthenticated.js';
 const router = express.Router();
 
 // Create a new carpool listing (requires authentication)
-router.post('/carpools', isAuthenticated, createCarpool);
+router.post('/createCarpool', isAuthenticated, createCarpool);
 
 // Get all carpool listings (public)
-router.get('/carpools', getAllCarpools);
+router.get('/getAllCarpools', getAllCarpools);
 
 // Delete a carpool listing by ID (requires authentication)
-router.delete('/carpools/:id', isAuthenticated, deleteCarpoolById);
+router.delete('/deleteCarpool/:id', isAuthenticated, deleteCarpoolById);
 
 export default router;

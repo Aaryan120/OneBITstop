@@ -11,8 +11,8 @@ const lostFoundItemSchema = new mongoose.Schema({
     required: true,
   },
   photo: {
-    data: Buffer,
-    contentType: String,
+    type: String,
+    required: true,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,

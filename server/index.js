@@ -1,7 +1,6 @@
 // index.js
 import express from "express";
 import cors from "cors";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
@@ -19,8 +18,7 @@ dotenv.config();
 connectDB();
 
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://connecting-campuses.vercel.app"
+  "http://localhost:5173"
 ];
 
 const corsOptions = {
@@ -43,15 +41,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/attendance", attendanceRoutes);
+app.use("/api/v1/college-events", newsroomRoutes);
+app.use("/api/v1/lost-found", lostfounditemRoutes);
+app.use("/api/v1/carpool", carpoolRoutes); // Assuming carpoolRoutes is defined and imported
+app.use("/api/v1/sellbuys", sellbuysRoutes); // Assuming carpoolRoutes is defined and imported
 
 // Server start
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-app.use("/api/user", userRoutes);
-app.use("/api/attendance", attendanceRoutes);
-app.use("/api/college-events", newsroomRoutes);
-app.use("/api/l-f-items", lostfounditemRoutes);
-app.use("/api", carpoolRoutes); // Assuming carpoolRoutes is defined and imported
-app.use("/api/sellbuys", sellbuysRoutes); // Assuming carpoolRoutes is defined and imported

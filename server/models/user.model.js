@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema(
 
     phone: {
       type: String,
-      required: true,
       match: [/^\d{10}$/, "Phone number must be 10 digits"],
     },
 
@@ -32,10 +31,10 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
     },
 
-    graduatingYear: {
-      type: Number,
-      required: true,
-    },
+    // graduatingYear: {
+    //   type: Number,
+    //   required: true,
+    // },
 
     verificationToken: {
       type: String,

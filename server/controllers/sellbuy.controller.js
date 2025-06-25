@@ -1,4 +1,5 @@
 import SellBuy from "../models/sellbuylistings.model.js";
+import uploadFileToCloudinary from "../utils/imageUploader.js";
 
 export const createListing = async (req, res) => {
   try {
@@ -14,6 +15,18 @@ export const createListing = async (req, res) => {
     // req.file is the uploaded file
     const file = req.file;
 
+    if(!title || !price || !category || !description || !whatsappNumber || !email) {
+      return res.status(400).json({ message: "All fields are required", success: false });
+    }
+
+    if(!file) {
+      return res.status(400).json({ message: "Photo is required", success: false });
+    }
+
+
+    const imageDetails = await uploadFileToCloudinary(file,process.env.FOLDER_NAME);
+
+
     const newListing = new SellBuy({
       title,
       price,
@@ -21,12 +34,7 @@ export const createListing = async (req, res) => {
       description,
       whatsappNumber,
       email,
-      photo: file
-        ? {
-            data: file.buffer,      // buffer of file data
-            contentType: file.mimetype,
-          }
-        : null,
+      photo: imageDetails.secure_url,
     });
 
     const savedListing = await newListing.save();
