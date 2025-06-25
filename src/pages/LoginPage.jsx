@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import axios from "axios";
+import { loginUser, resendVerificationEmail } from '../services/operations/userApi';
 import toast, { Toaster } from "react-hot-toast";
 import { USER_API_ENDPOINT } from "../../constants";
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from "react-icons/fi";
@@ -23,67 +23,62 @@ const LoginPage = () => {
 
   const resendVerification = async () => {
     try {
-      setLoading(true);
-      await axios.post(`${USER_API_ENDPOINT}/api/user/resend-verification`, {
-        email: formData.email,
-      });
-      toast.success("Verification email resent. Please check your inbox.");
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to resend verification email."
+      await resendVerificationEmail({ email: formData.email });
+      toast(
+        "Verification email resent. Please check your inbox.",
+        {
+          type: "success",
+          duration: 3000,
+          position: "bottom-right",
+          icon: "🎉",
+        }
       );
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      toast.error(error.message || 'Failed to resend verification email.');
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg("");
+    setErrorMsg('');
     setLoading(true);
 
     if (!formData.email || !formData.password) {
-      setErrorMsg("Both fields are required.");
+      setErrorMsg('Both fields are required.');
       setLoading(false);
       return;
     }
 
     try {
-      const res = await axios.post(
-        `${USER_API_ENDPOINT}/api/user/login`,
-        formData,
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-
-      if (!res.data.success) {
-        setErrorMsg(res.data.message || "Login failed.");
+      const res = await loginUser({
+        email: formData.email,
+        password: formData.password,
+      });
+      console.log("PRINTING RESPONSE: ",res);
+      if (!res.success) {
+        setErrorMsg(res.message || 'Login failed.');
         setLoading(false);
         return;
       }
 
-      const user = res.data.user;
-      localStorage.setItem("user", JSON.stringify(user));
 
+      console.log("PRINTING RESPONSE: ",res);
+      const user = res.user;
+      localStorage.setItem('user', JSON.stringify(user));
       if (!user.isVerified) {
-        setErrorMsg("Please verify your email before logging in.");
-        toast.error("Please verify your email to activate your account.");
+        setErrorMsg('Please verify your email before logging in.');
+        toast.error('Please verify your email to activate your account.');
         setLoading(false);
         return;
       }
-
       login(user);
-      const username = user?.name || user?.email || "User";
+      const username = user?.name || user?.email || 'User';
       toast.success(`Welcome back, ${username}!`);
-      
       setTimeout(() => {
-        navigate("/profile");
+        navigate('/profile');
       }, 1000);
     } catch (error) {
-      setErrorMsg(error.response?.data?.message || "Login failed.");
-      console.error("Login error:", error);
+      setErrorMsg(error.message || 'Login failed.');
     } finally {
       setLoading(false);
     }
@@ -126,7 +121,7 @@ const LoginPage = () => {
               {errorMsg && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <p className="text-red-600 text-sm">{errorMsg}</p>
-                  {errorMsg === "Please verify your email before logging in." && (
+                  {errorMsg !== "" && (
                     <button
                       type="button"
                       onClick={resendVerification}

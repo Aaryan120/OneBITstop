@@ -3,20 +3,30 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import * as crypto from "node:crypto";
 import nodemailer from "nodemailer";
-import sendEmail from "../config/sendEmail.js";
+import mailSender from "../utils/mailSender.js";
 
 // REGISTER
 export const registerUser = async (req, res) => {
   try {
-    console.log("📥 Incoming request to register user:", req.body);
 
-    const { name, email, phone, password, graduatingYear } = req.body;
+    const { name, email, password,confirmPassword } = req.body;
 
     // Validation
-    if (!name || !email || !phone || !password || !graduatingYear) {
+    if (!name || !email || !password || !confirmPassword) {
       return res
         .status(400)
-        .json({ message: "All fields are required", success: false });
+        .json({ 
+          message: "All fields are required", 
+          success: false,
+          error: "All fields are required"
+        });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        message: "Passwords do not match",
+        success: false,
+      });
     }
 
     if (!email.endsWith("@bitmesra.ac.in")) {
@@ -26,13 +36,13 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    const currentYear = new Date().getFullYear();
-    if (parseInt(graduatingYear) < currentYear) {
-      return res.status(400).json({
-        message: "Graduating year must be current or future",
-        success: false,
-      });
-    }
+    // const currentYear = new Date().getFullYear();
+    // if (parseInt(graduatingYear) < currentYear) {
+    //   return res.status(400).json({
+    //     message: "Graduating year must be current or future",
+    //     success: false,
+    //   });
+    // }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -55,22 +65,22 @@ export const registerUser = async (req, res) => {
     const newUser = await User.create({
       name,
       email,
-      phone,
+      // phone,
       password, // ✅ plain password - will be hashed by schema
-      graduatingYear,
+      // graduatingYear,
       verificationToken,
       tokenExpires,
     });
 
-    const verifyURL = `${process.env.CLIENT_BASE_URL}/verify-email?token=${verificationToken}`;
+      const verifyURL = `${process.env.CLIENT_BASE_URL}/verify-email?token=${verificationToken}`;
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
 
     try {
       await transporter.sendMail({
@@ -82,11 +92,12 @@ export const registerUser = async (req, res) => {
         <a href="${verifyURL}">${verifyURL}</a>
         <p>This link will expire in 1 hour.</p>`,
       });
-    } catch (mailErr) {
-      console.error("❌ Email send error:", mailErr);
+
+    } catch (error) {
       return res.status(500).json({
-        message: "User created, but failed to send verification email.",
+        message: "Failed to send verification email",
         success: false,
+        error: error.message,
       });
     }
 
@@ -94,9 +105,9 @@ export const registerUser = async (req, res) => {
       message:
         "User registered. Please check your email to verify your account.",
       success: true,
+      data: newUser,
     });
   } catch (error) {
-    console.error("❌ Registration error:", error);
     return res.status(500).json({
       message: "Internal server error",
       success: false,
@@ -112,23 +123,26 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({
+        error: "Email and password are required",
         message: "Email and password are required",
         success: false,
       });
     }
 
     const user = await User.findOne({ email });
+    console.log("PRINTING USER: ",user);
     if (!user) {
       return res.status(400).json({
-        message: "Invalid email or password",
+        error: "Invalid email or password",
+        message: "User not registered. Please sign up first.",
         success: false,
       });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log("❌ Password mismatch for user:", email);
       return res.status(400).json({
+        error: "Invalid email or password",
         message: "Invalid email or password",
         success: false,
       });
@@ -136,6 +150,7 @@ export const loginUser = async (req, res) => {
 
     if (!user.isVerified) {
       return res.status(403).json({
+        error: "Please verify your email before logging in",
         message: "Please verify your email before logging in",
         success: false,
       });
@@ -149,8 +164,8 @@ export const loginUser = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      phone: user.phone,
-      graduatingYear: user.graduatingYear,
+      // phone: user.phone,
+      // graduatingYear: user.graduatingYear,
       isVerified: user.isVerified, // ✅ This was missing!
     };
 
@@ -194,9 +209,9 @@ export const getCurrentUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        phone: user.phone,
-        graduatingYear: user.graduatingYear,
-        // department: user.department, // Uncomment if you add this field later
+        // phone: user.phone,
+        // graduatingYear: user.graduatingYear,
+        // department: user.department,
         createdAt: user.createdAt,
       },
     });
@@ -228,7 +243,7 @@ export const logoutUser = async (req, res) => {
 // UPDATE PROFILE
 export const updateProfile = async (req, res) => {
   try {
-    const { name, phone, graduatingYear } = req.body;
+    const { name } = req.body;
 
     const userId = req.user._id; // Fix: get userId from req.user
 
@@ -241,20 +256,20 @@ export const updateProfile = async (req, res) => {
     }
 
     if (name) user.name = name;
-    if (phone) user.phone = phone;
+    // if (phone) user.phone = phone;
 
-    if (graduatingYear) {
-      const currentYear = new Date().getFullYear();
-      const gradYearNum = parseInt(graduatingYear, 10);
-      if (isNaN(gradYearNum) || gradYearNum < currentYear) {
-        return res.status(400).json({
-          message:
-            "Graduating year must be a valid number and current or future year",
-          success: false,
-        });
-      }
-      user.graduatingYear = gradYearNum;
-    }
+    // if (graduatingYear) {
+    //   const currentYear = new Date().getFullYear();
+    //   const gradYearNum = parseInt(graduatingYear, 10);
+    //   if (isNaN(gradYearNum) || gradYearNum < currentYear) {
+    //     return res.status(400).json({
+    //       message:
+    //         "Graduating year must be a valid number and current or future year",
+    //       success: false,
+    //     });
+    //   }
+    //   user.graduatingYear = gradYearNum;
+    // }
 
     await user.save();
 
@@ -262,8 +277,8 @@ export const updateProfile = async (req, res) => {
       _id: user._id,
       fullname: user.name,
       email: user.email,
-      phoneNumber: user.phone,
-      graduatingYear: user.graduatingYear,
+      //  phoneNumber: user.phone,
+      //  graduatingYear: user.graduatingYear,
     };
 
     return res.status(200).json({
@@ -292,7 +307,6 @@ export const resendVerificationEmail = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-
     if (!user) {
       return res
         .status(404)
@@ -304,10 +318,9 @@ export const resendVerificationEmail = async (req, res) => {
         .status(400)
         .json({ message: "User already verified", success: false });
     }
-
     // Generate a new token and expiry
     const verificationToken = crypto.randomBytes(32).toString("hex");
-    const tokenExpires = Date.now() + 1000 * 60 * 60; // 1 hour
+    const tokenExpires = Date.now() + 10*60*1000; // 10 minutes
 
     user.verificationToken = verificationToken;
     user.tokenExpires = tokenExpires;
@@ -330,9 +343,8 @@ export const resendVerificationEmail = async (req, res) => {
       html: `<p>Hi ${user.name},</p>
              <p>Click the link below to verify your account:</p>
              <a href="${verifyURL}">${verifyURL}</a>
-             <p>This link will expire in 1 hour.</p>`,
+             <p>This link will expire in 10 minutes.</p>`,
     });
-
     return res.status(200).json({
       message: "Verification email resent. Please check your inbox.",
       success: true,
@@ -380,6 +392,13 @@ export const resetPassword = async (req, res) => {
   const { password } = req.body;
 
   try {
+    if(!token || !password) {
+      return res.status(400).json({
+        message: "Token and password are required",
+        success: false,
+      });
+    }
+    
     const user = await User.findOne({
       resetPasswordToken: token,
       resetPasswordExpires: { $gt: Date.now() }, // Not expired

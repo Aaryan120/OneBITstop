@@ -17,8 +17,8 @@ const sellbuySchema = new mongoose.Schema({
     trim: true,
   },
   photo: {
-    data: Buffer,
-    contentType: String,
+    type: String,
+    required: true,
   },
   description: {
     type: String,

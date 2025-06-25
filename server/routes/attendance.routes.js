@@ -13,21 +13,21 @@ const router = express.Router();
 
 router.use(isAuthenticated);
 
-router.get("/", (req, res) =>
+router.get("/getAttendance", (req, res) =>
   getUserAttendance({ ...req, params: { userId: req.user._id } }, res)
 );
 
-router.get("/:subject", (req, res) =>
+router.get("/getSubjectAttendance/:subject", (req, res) =>
   getSubjectAttendance(
     { ...req, params: { userId: req.id, subject: req.params.subject } },
     res
   )
 );
-router.delete("/subject/:subject", isAuthenticated, deleteSubjectForUser);
+router.delete("/deleteSubject/:subject", isAuthenticated, deleteSubjectForUser);
 
-router.delete("/allclear", isAuthenticated, clearAllAttendance);
+router.delete("/clearAll", isAuthenticated, clearAllAttendance);
 
-router.post("/", isAuthenticated, (req, res) => {
+router.post("/updateAttendance", isAuthenticated, (req, res) => {
   upsertAttendance(req, res); // userId will come from req.user._id inside upsertAttendance
 });
 

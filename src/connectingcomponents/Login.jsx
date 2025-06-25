@@ -12,6 +12,7 @@ import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from "react-icons/fi";
 
 import { SignupFormDemo } from "./Signup";
 import { useAuth } from "../context/AuthContext";
+import { loginUser, resendVerificationEmail } from '../services/operations/userApi';
 // adjust path if needed
 
 const LoginForm = ({ onLoginSuccess, onClose }) => {
@@ -31,14 +32,10 @@ const LoginForm = ({ onLoginSuccess, onClose }) => {
   const resendVerification = async () => {
     try {
       setLoading(true);
-      await axios.post(`${USER_API_ENDPOINT}/api/user/resend-verification`, {
-        email: formData.email,
-      });
-      toast.success("Verification email resent. Please check your inbox.");
+      await resendVerificationEmail({ email: formData.email });
+      toast.success('Verification email resent. Please check your inbox.');
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to resend verification email."
-      );
+      toast.error(error.message || 'Failed to resend verification email.');
     } finally {
       setLoading(false);
     }
@@ -51,69 +48,44 @@ const LoginForm = ({ onLoginSuccess, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg("");
+    setErrorMsg('');
     setLoading(true);
-
-
     if (!formData.email || !formData.password) {
-      setErrorMsg("Both fields are required.");
+      setErrorMsg('Both fields are required.');
       setLoading(false);
-
       return;
     }
-
     try {
-      const res = await axios.post(
-        `${USER_API_ENDPOINT}/api/user/login`,
-        formData,
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true, // Important: send cookies with request
-        }
-      );
-
-
-      if (!res.data.success) {
-        setErrorMsg(res.data.message || "Login failed.");
+      const res = await loginUser({
+        email: formData.email,
+        password: formData.password,
+      });
+      if (!res.success) {
+        setErrorMsg(res.message || 'Login failed.');
         setLoading(false);
-
         return;
       }
-
-      const user = res.data.user;
-
-      // Store user info only, no token
-      localStorage.setItem("user", JSON.stringify(user));
-
-
+      const user = res.user;
+      localStorage.setItem('user', JSON.stringify(user));
       if (!user.isVerified) {
-        setErrorMsg("Please verify your email before logging in.");
-        toast.error("Please verify your email to activate your account.");
+        setErrorMsg('Please verify your email before logging in.');
+        toast.error('Please verify your email to activate your account.');
         setLoading(false);
         return;
       }
-
-
-      // No token in localStorage, no need to set axios default headers here
-      // Because the token is automatically sent in cookies with future requests (if withCredentials is set)
-
-      login(user); // from AuthContext
-
-      const username = user?.name || user?.email || "User";
+      login(user);
+      const username = user?.name || user?.email || 'User';
       setAlert({
         message: `Welcome back, ${username}! Redirecting to home...`,
-        type: "success",
+        type: 'success',
       });
       toast.success(`Welcome back, ${username}!`);
-
       setTimeout(() => {
-        window.location.href = "/profile";
+        window.location.href = '/profile';
       }, 100);
-
       if (onLoginSuccess) onLoginSuccess();
     } catch (error) {
-      setErrorMsg(error.response?.data?.message || "Login failed.");
-      console.error("Login error:", error);
+      setErrorMsg(error.message || 'Login failed.');
     } finally {
       setLoading(false);
     }
