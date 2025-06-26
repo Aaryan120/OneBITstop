@@ -43,6 +43,17 @@ const Footer = () => {
           skills: ["React", "Nodejs", "TypeScript", "CSS", "DataStructure&Algorithms"],
           link: "https://www.linkedin.com/in/raj-aaryan-38923a25b/"
         },
+        {
+          id: "ayush",
+          name: "Ayush Raj",
+          role: "Emerging software engineer",
+          company: "BIT Mesra",
+          location: "Siwan, Bihar",
+          about: "Innovative mind pursuing a career in software development and AI-powered solutions.",
+          experience: "1+ years in Full Stack development",
+          skills: ["React", "Nodejs", "DataStructure&Algorithms"],
+          link: "https://www.linkedin.com/in/rajayush16"
+        },
       ]
     },
     {
@@ -55,11 +66,11 @@ const Footer = () => {
         {
           id: "Ayush_raj16",
           name: "Ayush Raj",
-          handle: "@ayush_raj16",
+          handle: "@iayushraj",
           followers: "500+",
           content: "Personal Instagram",
           highlights: ["Personal", "Lifestyle", "Campus Life"],
-          link: "https://www.instagram.com/ayush_raj16"
+          link: "https://www.instagram.com/iayushraj?igsh=MXBkb2ZoOHJtbW5rdw=="
         },
         {
           id: "Raj_aaryan10",
@@ -90,7 +101,16 @@ const Footer = () => {
           featuredProjects: ["UI Components", "Portfolio", "Blog"],
           link: "https://github.com/Aaryan120"
         },
-        
+        {
+          id: "rajayush16",
+          name: "Ayush Raj",
+          repos: "10+",
+          followers: "30+",
+          contributions: "200+",
+          topLanguages: ["JavaScript", "React", "Nodejs"],
+          featuredProjects: ["Blog App", "Portfolio", "Research on ML"],
+          link: "https://github.com/rajayush16"
+        },
       ]
     },
     {
@@ -101,14 +121,6 @@ const Footer = () => {
       description: "All links in one place",
       profiles: [
         {
-          id: "shaurya_links",
-          name: "Shaurya Aditya Verma",
-          bio: "Student Developer | Tech Enthusiast",
-          links: ["Portfolio", "Resume", "Social Media", "Contact"],
-          theme: "Professional",
-          link: "https://linktr.ee/Shaurya_Aditya_Verma"
-        },
-        {
           id: "raj_links",
           name: "Raj Aryan",
           bio: "Frontend Developer | UI/UX Designer",
@@ -117,12 +129,12 @@ const Footer = () => {
           link: "https://linktr.ee/rajaryan"
         },
         {
-          id: "priya_links",
-          name: "Priya Sharma",
-          bio: "Backend Developer | System Architect",
-          links: ["Portfolio", "Resume", "Tech Blog", "Contact"],
+          id: "iayushraj",
+          name: "Ayush Raj",
+          bio: "CS Undergrad | Building with Code & Curiosity",
+          links: ["Portfolio", "Resume", "Github", "Contact"],
           theme: "Minimal",
-          link: "https://linktr.ee/priyasharma"
+          link: "https://linktr.ee/iayushraj"
         }
       ]
     }
