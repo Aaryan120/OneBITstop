@@ -9,7 +9,7 @@ Modern student life is scattered across chats, links, and lost posts — **OneBI
 
 ## 🚀 Live Preview
 
-🔗 [**Explore the App Live**](https://connecting-campuses.vercel.app) — No sign-up required!
+🔗 [**Explore the App Live**](https://one-bit-stop.vercel.app/) — No sign-up required!
 
 ---
 
