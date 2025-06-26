@@ -28,16 +28,16 @@ A centralized, interactive dashboard for everything that matters on campus:
 
 ## 🖼️ UI Preview
 
-| Landing Page | Newsroom | Marketplace |
+| Landing Page | Lost & Found | Marketplace |
 |----------|----------|-------------|
-| ![](public/landing_page.png) | ![Screenshot 2025-06-01 172317](https://github.com/user-attachments/assets/e68485f0-3b95-479e-9b26-c7126f802a7d)| ![Screenshot 2025-06-01 172357](https://github.com/user-attachments/assets/5fa4d8ac-e9a4-499b-8c3c-a4ca95ff2a48)
+| ![](public/landing_page.png) | ![Screenshot 2025-06-01 172317](https://github.com/user-attachments/assets/e68485f0-3b95-479e-9b26-c7126f802a7d)| ![Screenshot 2025-06-01 172357](public/buyandsell.png)
  |
 
 > 📷 *More screens from the app:*
 
 - ![Lost & Found](https://github.com/user-attachments/assets/83572daa-b506-4025-8ff1-63c9b91e413a)
-- ![Carpool](https://github.com/user-attachments/assets/f962a33d-8bf0-43f0-8994-ed08503efe00)
-- ![Attendance Tracker](https://github.com/user-attachments/assets/fcc71899-ef4e-4398-a619-3bdfeb00d607)
+- ![Carpool](public/hopbit.png)
+- ![Attendance Tracker](public/buyandsell.png)
 - ![Menu UI](https://github.com/user-attachments/assets/ad6bbc2c-bc8d-4ee7-8735-feb8e47f19c5)
 
 ---
