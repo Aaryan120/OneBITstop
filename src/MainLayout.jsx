@@ -5,12 +5,11 @@ import HeroSection from './connectingcomponents/HeroSection';
 import BITListings from './connectingcomponents/BITListings';
 import LostAndFound from './connectingcomponents/LostAndFound';
 import HopBIT from './connectingcomponents/HopBIT';
-// import SellBuySection from './connectingcomponents/SellBuySection';
 import AttendancePreview from './connectingcomponents/AttendancePreview';
 import BITMesraInfo from './connectingcomponents/BITMesraInfo';
-import Footer from './connectingcomponents/Footer';
+// import Footer from './connectingcomponents/Footer';
 import ClubStrip from './connectingcomponents/ClubStrip';
-import LayoutGridDemo from './components/ui/layout-grid-demo';
+// import LayoutGridDemo from './components/ui/layout-grid-demo';
 
 const MainLayout = () => {
   return (

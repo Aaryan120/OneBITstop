@@ -22,8 +22,11 @@ export async function registerUser(data) {
 export async function loginUser(data) {
   try {
     const res = await apiconnector("POST", userEndpoints.LOGIN, data);
-    // console.log("PRINTING RESPONSE INSIDE LOGIN USER: ",res);
+    if(!res.data.success){
+        throw new Error(res.data.message);
+    }
 
+    
     return res.data;
   } catch (error) {
     throw error.response?.data || error;
@@ -33,6 +36,11 @@ export async function loginUser(data) {
 export async function logoutUser(token) {
   try {
     const res = await apiconnector("POST", userEndpoints.LOGOUT, null, { Authorization: `Bearer ${token}` });
+
+    if(!res.data.success){
+      throw new Error(res.data.message);
+    }
+
     return res.data;
   } catch (error) {
     throw error.response?.data || error;

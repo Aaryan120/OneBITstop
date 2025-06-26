@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { loginUser, resendVerificationEmail } from '../services/operations/userApi';
 import toast, { Toaster } from "react-hot-toast";
-import { USER_API_ENDPOINT } from "../../constants";
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { User } from "lucide-react";
@@ -54,7 +53,7 @@ const LoginPage = () => {
         email: formData.email,
         password: formData.password,
       });
-      console.log("PRINTING RESPONSE: ",res);
+
       if (!res.success) {
         setErrorMsg(res.message || 'Login failed.');
         setLoading(false);
@@ -62,8 +61,8 @@ const LoginPage = () => {
       }
 
 
-      console.log("PRINTING RESPONSE: ",res);
       const user = res.user;
+      localStorage.setItem('token', res?.user?.token);
       localStorage.setItem('user', JSON.stringify(user));
       if (!user.isVerified) {
         setErrorMsg('Please verify your email before logging in.');
@@ -71,7 +70,7 @@ const LoginPage = () => {
         setLoading(false);
         return;
       }
-      login(user);
+      login(user,res?.user?.token);
       const username = user?.name || user?.email || 'User';
       toast.success(`Welcome back, ${username}!`);
       setTimeout(() => {

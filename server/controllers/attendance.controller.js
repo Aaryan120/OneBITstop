@@ -63,6 +63,47 @@ export const getSubjectAttendance = async (req, res) => {
 };
 
 // Create or update attendance status for a specific date & subject
+export const addSubject = async (req, res) => {
+  try {
+    const { subject } = req.body;
+    const userId = req.user?._id;
+    if(!userId || !subject){
+      return res.status(400).json({
+        success: false,
+        message: "User ID and subject are required"
+      });
+    }
+
+    const record = await Attendance.findOne({ userId, subject: subject.toUpperCase() });
+    if(record){
+      return res.status(400).json({
+        success: false,
+        message: "Subject already exists"
+      });
+    }
+
+    const newRecord = new Attendance({ userId, subject: subject.toUpperCase() });
+    await newRecord.save();
+
+    const user = await User.findByIdAndUpdate(userId, {
+      $push: {
+        attendanceModel: newRecord._id
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Subject added successfully",
+      data: newRecord,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false, 
+      message: "Internal Server Error",
+    });
+  }
+};
+
 export const upsertAttendance = async (req, res) => {
   try {
     const { subject, date, status } = req.body;

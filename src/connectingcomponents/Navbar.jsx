@@ -39,7 +39,14 @@ const Navbar = () => {
     e.preventDefault();
 
     if (href === "/attendance" && !user) {
-      toast.error("Please login to view and track your attendance.");
+      toast("Please login to view and track your attendance.",
+        {
+          type: "error",
+          duration: 3000,
+          position: "bottom-right",
+          icon: "❌",
+        }
+      );
       return;
     }
 

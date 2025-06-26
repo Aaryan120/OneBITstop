@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
-import axios from "axios";
 import { LayoutGrid } from "../ui/layout-grid";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -9,7 +8,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { getImageSrc } from "../../features/marketplace/SellBuyPage";
-import { USER_API_ENDPOINT } from "../../../constants";
+import { getAllSellBuyListings } from "../services/operations/sellBuyApi";
 
 const SellBuySection = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -28,9 +27,9 @@ const SellBuySection = () => {
   const fetchListings = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${USER_API_ENDPOINT}/api/sellbuys/listings`);
+      const res = await getAllSellBuyListings();
 
-      const listingsWithImages = res.data.map((item) => ({
+      const listingsWithImages = res.map((item) => ({
         ...item,
         imageSrc: getImageSrc(item.photo),
       }));

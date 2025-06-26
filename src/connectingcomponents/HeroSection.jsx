@@ -19,11 +19,6 @@ const HeroSection = () => {
       description: "Buy and sell textbooks, electronics, and other essentials within your campus community."
     },
     {
-      icon: "📰",
-      title: "Stay Informed",
-      description: "Get the latest campus news, events, and announcements in one place."
-    },
-    {
       icon: "🔍",
       title: "Lost & Found",
       description: "Find lost items or help others recover their belongings quickly and easily."

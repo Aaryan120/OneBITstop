@@ -13,7 +13,10 @@ export const createCarpool = async (req, res) => {
       contactNumber,
       email
     } = req.body;
+
+
     const userId = req.user?._id;
+    
     if(!userId){
       return res.status(401).json({
         success: false,
@@ -21,12 +24,6 @@ export const createCarpool = async (req, res) => {
       });
     }
     
-    const user = await User.findByIdAndUpdate(userId, {
-      $push: {
-        carpools: carpool._id
-      }
-    });
-
     //check if all fields are present
     if(!pickupLocation || !dropLocation || !travelDate || !departureTime || !seatsAvailable || !contactNumber || !email){
       return res.status(400).json({
@@ -47,8 +44,11 @@ export const createCarpool = async (req, res) => {
       userId
     });
 
-    
-
+    const user = await User.findByIdAndUpdate(userId, {
+      $push: {
+        carpools: carpool._id
+      }
+    });
 
 
     await carpool.save();

@@ -2,9 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { Carousel, Card } from "../ui/apple-cards-carousel";
 import { toast } from "react-hot-toast";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { USER_API_ENDPOINT } from "../../../constants";
+import { getAllCollegeEvents } from "../services/operations/collegeEventsApi";
 
 const Newsroom = () => {
   const [events, setEvents] = useState([]);
@@ -13,14 +12,20 @@ const Newsroom = () => {
   useEffect(() => {
     const fetchNewsroomEvents = async () => {
       try {
-        const response = await axios.get(
-          `${USER_API_ENDPOINT}/api/college-events/`
-        );
-        const firstSix = response.data.slice(0, 6);
+        const response = await getAllCollegeEvents();
+        const firstSix = response.slice(0, 6);
         setEvents(firstSix);
       } catch (err) {
         console.error("Error fetching events:", err);
-        toast.error("Failed to load newsroom events");
+        toast(
+          "Failed to load newsroom events",
+          {
+            type: "error",
+            duration: 3000,
+            position: "bottom-right",
+            icon: "❌",
+          }
+        );
       } finally {
         setLoading(false); // ✅ Stop loading after fetch
       }

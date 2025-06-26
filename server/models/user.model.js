@@ -71,7 +71,7 @@ const userSchema = new mongoose.Schema(
     },
     lostAndFoundListings: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: 'LostAndFound',
+      ref: 'LostFoundItem',
     },
     createdAt: {
       type: Date,

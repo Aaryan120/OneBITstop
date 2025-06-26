@@ -1,15 +1,23 @@
 import LostFoundItem from "../models/LostFoundItem.model.js";
+import User from "../models/user.model.js";
 import uploadFileToCloudinary from "../utils/imageUploader.js";
 
 // Add new lost/found item
 export const addItem = async (req, res) => {
   try {
+
     const { title, description, contact, whatsapp, date } = req.body;
 
     if (!title || !description || !contact || !whatsapp || !date) {
       return res
         .status(400)
         .json({ message: "Please fill in all required fields." });
+    }
+
+    // Get user from authentication
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
     const itemDate = new Date(date);
@@ -19,15 +27,20 @@ export const addItem = async (req, res) => {
       return res.status(400).json({ message: "Date cannot be in the future." });
     }
 
-    const file = req.file; // multer provides this
+    // req.files contains the uploaded files from our middleware
+    const files = req.files || [];
 
-    if(!file) {
-      return res.status(400).json({ message: "Photo is required", success: false });
+    if(files.length === 0) {
+      return res.status(400).json({ message: "At least one photo is required", success: false });
     }
 
-    const imageDetails = await uploadFileToCloudinary(file,process.env.FOLDER_NAME);
-
+    // Upload all files to Cloudinary
+    const uploadPromises = files.map(file => 
+      uploadFileToCloudinary(file.base64Data, process.env.CLOUDINARY_FOLDER_NAME)
+    );
     
+    const uploadResults = await Promise.all(uploadPromises);
+    const imageUrls = uploadResults.map(result => result.secure_url);
 
     const newItem = new LostFoundItem({
       title,
@@ -35,11 +48,26 @@ export const addItem = async (req, res) => {
       contact,
       whatsapp,
       date: itemDate,
-      photo: imageDetails.secure_url,
+      photo: imageUrls[0], // Main photo
+      additionalPhotos: imageUrls.slice(1), // Additional photos
+      user: user._id, // Set the user reference
     });
 
     const savedItem = await newItem.save();
-    res.status(201).json(savedItem);
+
+    // Update user's lost and found listings (if the field exists)
+    if (user.lostAndFoundListings) {
+      user.lostAndFoundListings.push(savedItem._id);
+      await user.save();
+    }
+
+    res.status(201).json(
+      {
+        message: "Item added successfully.",
+        success: true,
+        data: savedItem,
+      }
+    );
   } catch (error) {
     console.error("Error adding lost/found item:", error);
     res.status(500).json({ message: "Server error, please try again later." });

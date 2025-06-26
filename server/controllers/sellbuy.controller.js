@@ -3,6 +3,7 @@ import uploadFileToCloudinary from "../utils/imageUploader.js";
 
 export const createListing = async (req, res) => {
   try {
+
     const {
       title,
       price,
@@ -12,20 +13,24 @@ export const createListing = async (req, res) => {
       email
     } = req.body;
 
-    // req.file is the uploaded file
-    const file = req.file;
+    // req.files contains the uploaded files from our middleware
+    const files = req.files || [];
 
     if(!title || !price || !category || !description || !whatsappNumber || !email) {
       return res.status(400).json({ message: "All fields are required", success: false });
     }
 
-    if(!file) {
-      return res.status(400).json({ message: "Photo is required", success: false });
+    if(files.length === 0) {
+      return res.status(400).json({ message: "At least one photo is required", success: false });
     }
 
-
-    const imageDetails = await uploadFileToCloudinary(file,process.env.FOLDER_NAME);
-
+    // Upload all files to Cloudinary
+    const uploadPromises = files.map(file => 
+      uploadFileToCloudinary(file.base64Data, process.env.CLOUDINARY_FOLDER_NAME)
+    );
+    
+    const uploadResults = await Promise.all(uploadPromises);
+    const imageUrls = uploadResults.map(result => result.secure_url);
 
     const newListing = new SellBuy({
       title,
@@ -34,7 +39,8 @@ export const createListing = async (req, res) => {
       description,
       whatsappNumber,
       email,
-      photo: imageDetails.secure_url,
+      photo: imageUrls[0], // Main photo
+      additionalPhotos: imageUrls.slice(1), // Additional photos
     });
 
     const savedListing = await newListing.save();
@@ -44,12 +50,14 @@ export const createListing = async (req, res) => {
       data: savedListing,
     });
   } catch (error) {
+    console.error('Error creating listing:', error);
     res.status(400).json({
       message: 'Failed to create listing',
       error: error.message,
     });
   }
 };
+
 export const getAllListings = async (req, res) => {
   try {
     const listings = await SellBuy.find().sort({ createdAt: -1 });

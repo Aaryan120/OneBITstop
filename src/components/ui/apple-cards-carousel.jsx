@@ -16,9 +16,17 @@ import { cn } from "../../lib/utils";
 import { AnimatePresence, motion } from "motion/react";
 import { useOutsideClick } from "../../hooks/use-outside-click";
 import { useAuth } from "../../context/AuthContext";
-import axios from "axios";
-import { USER_API_ENDPOINT } from "../../../constants";
-import { useLocation } from "react-router-dom"; // ✅ Add this at the top
+import { useLocation } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import ConfirmationModal from "./ConfirmationModal";
+
+// Placeholder function - replace with actual API call when available
+const deleteCollegeEvent = async (eventId, token) => {
+  // TODO: Implement actual API call to delete college event
+  console.log("Deleting college event:", eventId, "with token:", token);
+  // For now, just return a resolved promise
+  return Promise.resolve({ success: true });
+};
 
 const getImageSrc = (photo) => {
   if (!photo?.data?.data || !photo?.contentType) return "";
@@ -165,14 +173,14 @@ export const Card = ({
   showDelete,
   onDelete,
 }) => {
-  const { user } = useAuth(); // fixed: no destructuring here
-  const location = useLocation(); // ✅ Get current path
-  const pathname = location.pathname;
+  const { user } = useAuth();
+  const { pathname } = useLocation();
+  const containerRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const imageSrc = getImageSrc(card.photo);
   const isListingView = pathname === "/newsroom"; // or whatever the route is
 
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef(null);
   const { onCardClose, currentIndex } = useContext(CarouselContext);
 
   function onKeyDown(event) {
@@ -216,22 +224,16 @@ export const Card = ({
   // Delete button handler
   const handleDeleteClick = async (e) => {
     e.stopPropagation();
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this event?"
-    );
-    if (!confirmed) return;
+    setShowConfirmModal(true);
+  };
 
+  const confirmDeleteEvent = async () => {
     if (!card._id) return;
 
-
     try {
-      // Call the DELETE endpoint
-      await axios.delete(
-        `${USER_API_ENDPOINT}/api/college-events/${card._id}`,
-        {
-          withCredentials: true,
-        }
-      );
+      const token = user?.token || localStorage.getItem("token");
+      // Use the API function instead of direct axios call
+      await deleteCollegeEvent(card._id, token);
 
       // Notify parent to remove from state
       if (onDelete) {
@@ -239,8 +241,19 @@ export const Card = ({
       }
     } catch (error) {
       console.error("Error deleting event:", error);
-      alert("Failed to delete the event. Please try again.");
+      toast("Failed to delete the event. Please try again.",
+        {
+          type: "error",
+          duration: 3000,
+          position: "bottom-right",
+          icon: "❌",
+        }
+      )
     }
+  };
+
+  const closeConfirmModal = () => {
+    setShowConfirmModal(false);
   };
 
   const canDelete = user?.email && user.email === card.email;
@@ -377,6 +390,14 @@ export const Card = ({
           className="absolute inset-0 z-10 object-cover"
         />
       </motion.div>
+
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={closeConfirmModal}
+        onConfirm={confirmDeleteEvent}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this event?"
+      />
     </>
   );
 };

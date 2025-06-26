@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-
-import { USER_API_ENDPOINT } from "../../constants";
+import { getAllCarpools } from "../services/operations/carpoolApi";
 
 export default function CarpoolingSection({ user }) {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(`${USER_API_ENDPOINT}/api/carpools`, { withCredentials: true })
-      .then((res) => setPosts(res.data))
+    getAllCarpools()
+      .then((res) => setPosts(res))
       .catch((err) => console.error("Error fetching carpools:", err.message));
   }, []);
 
@@ -17,7 +14,7 @@ export default function CarpoolingSection({ user }) {
     // This function can be customized based on how you want to extract phone number
     // For now, fallback to default number or fetch from post.phoneNumber if available
     const foundPost = posts.find((p) => p.userEmail === email);
-    return foundPost?.phoneNumber || "919876543210";
+    return foundPost?.phoneNumber;
   };
 
   const displayedPosts = posts.slice(0, 6);
@@ -38,7 +35,7 @@ export default function CarpoolingSection({ user }) {
                 className="relative bg-white rounded-2xl border border-slate-200 shadow-md p-6 transition-transform duration-300 hover:scale-105 hover:shadow-xl"
               >
                 <div className="mb-3 text-sm text-slate-600">
-                  <strong>User:</strong> {post.email || "Anonymous"}
+                  <strong>User:</strong> {post.userEmail || "Anonymous"}
                 </div>
 
                 <p className="mb-1">
