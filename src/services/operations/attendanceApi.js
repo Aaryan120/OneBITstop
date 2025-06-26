@@ -1,7 +1,8 @@
 import { apiconnector } from "../apiConnector";
 import { attendanceEndpoints } from "../apis";
+import { toast } from "react-hot-toast";
 
-export async function getUserAttendance(token) {
+export async function getAttendance(token) {
   try {
     const res = await apiconnector(
       "GET",
@@ -30,7 +31,7 @@ export async function getSubjectAttendance(subject, token) {
   }
 }
 
-export async function upsertAttendance(data, token) {
+export async function updateAttendance(data, token) {
   try {
     const res = await apiconnector(
       "POST",
@@ -72,3 +73,18 @@ export async function clearAllAttendance(token) {
     throw error.response?.data || error;
   }
 } 
+
+export async function addSubject(subject, token) {
+  try {
+    const res = await apiconnector(
+      "POST",
+      attendanceEndpoints.ADD_SUBJECT,
+      { subject },
+      { Authorization: `Bearer ${token}` }
+    );
+
+    return res.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}

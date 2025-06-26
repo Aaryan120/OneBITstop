@@ -3,7 +3,8 @@ import { getAllCarpools, createCarpool, deleteCarpool } from "./services/operati
 import { Label } from "./components/ui/label";
 import { Input } from "./components/ui/input";
 import { useAuth } from "./context/AuthContext";
-import { USER_API_ENDPOINT } from "../constants";
+import { toast } from "react-hot-toast";
+import ConfirmationModal from "./components/ui/ConfirmationModal";
 
 const Loader = ({ message = "Loading, please wait..." }) => (
   <div className="fixed inset-0 flex flex-col justify-center items-center bg-white/80 dark:bg-black/80 z-50">
@@ -37,6 +38,8 @@ export default function CarpoolingListing() {
   const [posts, setPosts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useAuth();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
 
   const [newPost, setNewPost] = useState({
     from: "",
@@ -80,18 +83,38 @@ export default function CarpoolingListing() {
   };
 
   const handleDeletePost = async (postId) => {
-    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    setPostToDelete(postId);
+    setShowConfirmModal(true);
+  };
+
+  const confirmDeletePost = async () => {
+    if (!postToDelete) return;
+    
     setLoading(true);
     setError(null);
     try {
-      await deleteCarpool(postId, user?.token);
-      setPosts((prev) => prev.filter((p) => p._id !== postId));
+      await deleteCarpool(postToDelete, user?.token);
+      setPosts((prev) => prev.filter((p) => p._id !== postToDelete));
     } catch (err) {
       setError(err.message || "Failed to delete the post");
-      alert("Failed to delete the post. Please try again.");
+      toast(
+        `Failed to delete the post. Reason: ${err.message || "Unknown error"}`,
+        {
+          type: "error",
+          duration: 3000,
+          position: "bottom-right",
+          icon: "❌",
+        }
+      )
     } finally {
       setLoading(false);
+      setPostToDelete(null);
     }
+  };
+
+  const closeConfirmModal = () => {
+    setShowConfirmModal(false);
+    setPostToDelete(null);
   };
 
   const handleFormSubmit = async (e) => {
@@ -205,7 +228,7 @@ export default function CarpoolingListing() {
                     </div>
                     <div className="flex items-end justify-end mt-4">
                       <a
-                        href={`https://wa.me/${post.phoneNumber}`}
+                        href={`https://wa.me/${post.contactNumber}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Chat on WhatsApp"
@@ -334,7 +357,19 @@ export default function CarpoolingListing() {
               <div className="flex justify-end gap-3 pt-4">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setNewPost({
+                      from: "",
+                      to: "",
+                      date: "",
+                      time: "",
+                      seatsAvailable: "",
+                      note: "",
+                      userEmail: user?.email || "",
+                      phoneNumber: "",
+                    });
+                  }}
                   className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 text-sm"
                 >
                   Cancel
@@ -349,6 +384,15 @@ export default function CarpoolingListing() {
             </form>
           </div>
         </div>
+      )}
+
+      {showConfirmModal && (
+        <ConfirmationModal
+          isOpen={showConfirmModal}
+          onClose={closeConfirmModal}
+          onConfirm={confirmDeletePost}
+          message="Are you sure you want to delete this post?"
+        />
       )}
 
       {error && <div className="text-red-500 text-center my-4">{error}</div>}

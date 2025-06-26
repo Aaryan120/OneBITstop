@@ -1,7 +1,5 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { USER_API_ENDPOINT } from "../constants.js";
 import AttendanceChart from "./connectingcomponents/AttendenceChart";
 import AttendanceModal from "./connectingcomponents/AttendenceModal";
 import Calendar from "./connectingcomponents/Calender";
@@ -9,6 +7,7 @@ import Navbar from "./connectingcomponents/MyattendanceNavbar";
 import { useAuth } from "./context/AuthContext";
 import { useTheme } from "./context/ThemeContext";
 import toast, { Toaster } from "react-hot-toast";
+import { getAttendance, updateAttendance as updateAttendanceApi } from "./services/operations/attendanceApi";
 
 const AttendenceManager = () => {
   const { user } = useAuth();
@@ -52,19 +51,8 @@ const AttendenceManager = () => {
           return;
         }
 
-        const response = await axios.get(
-          `${USER_API_ENDPOINT}/api/attendance/`,
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const data = response.data;
-
-        if (!Array.isArray(data) || data.length === 0) {
+        const data = await getAttendance(token);
+        if (!Array.isArray(data?.data) || data?.data?.length === 0) {
           toast(
             "No attendance records found.",
             {
@@ -76,11 +64,11 @@ const AttendenceManager = () => {
           return;
         }
 
-        const subs = data.map((rec) => rec.subject);
+        const subs = data?.data?.map((rec) => rec.subject);
         setSubjects(subs);
 
         const attendanceData = {};
-        data.forEach(({ subject, records }) => {
+        data?.data?.forEach(({ subject, records }) => {
           if (subject && records) {
             attendanceData[subject] = records;
           }
@@ -107,11 +95,21 @@ const AttendenceManager = () => {
     fetchAttendance();
   }, [user, navigate]);
 
-  const updateAttendance = async (date, status) => {
-    if (!selectedSubject) return;
+  const handleAttendanceUpdate = async (date, status) => {
+    if (!selectedSubject) {
+      toast(
+        "Please select a subject first",
+        {
+          icon: "❌",
+          duration: 3000,
+          position: "bottom-right",
+        }
+      );
+      return;
+    }
 
     try {
-      const token = localStorage.getItem("token");
+      const token = user?.token || localStorage.getItem("token");
       if (!token) {
         toast(
           "No token found",
@@ -124,27 +122,36 @@ const AttendenceManager = () => {
         return;
       }
 
-      await axios.post(
-        `${USER_API_ENDPOINT}/api/attendance/`,
-        {
-          subject: selectedSubject,
-          date,
-          status: status.toLowerCase(),
-        },
-        { withCredentials: true }
-      );
+      const response = await updateAttendanceApi({
+        subject: selectedSubject,
+        date,
+        status: status.toLowerCase(),
+      }, token);
 
-      setAttendance((prev) => {
-        const updated = { ...prev };
-        if (!updated[selectedSubject]) updated[selectedSubject] = {};
-        updated[selectedSubject][date] = status;
-        return updated;
-      });
+      if (response.success) {
+        // Update local state
+        setAttendance((prev) => {
+          const updated = { ...prev };
+          if (!updated[selectedSubject]) updated[selectedSubject] = {};
+          updated[selectedSubject][date] = status;
+          return updated;
+        });
 
-      setModalDate(null);
+        setModalDate(null);
+        toast(
+          "Attendance updated successfully!",
+          {
+            icon: "✅",
+            duration: 3000,
+            position: "bottom-right",
+          }
+        );
+      } else {
+        toast.error(response.message || "Failed to update attendance");
+      }
     } catch (error) {
       toast(
-        "Failed to update attendance.",
+        "Failed to update attendance",
         {
           icon: "❌",
           duration: 3000,
@@ -170,7 +177,7 @@ const AttendenceManager = () => {
 
   return (
     <>
-      <Toaster />
+      <Toaster />        
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-white dark:from-gray-900 dark:via-gray-800 dark:to-slate-900 pt-24 px-4 pb-8">
         <div className="max-w-7xl mx-auto">
           <Navbar
@@ -180,7 +187,7 @@ const AttendenceManager = () => {
             setSelectedSubject={setSelectedSubject}
           />
           {selectedSubject && (
-            <div className="flex flex-col lg:flex-row mt-8 gap-8">
+            <div className="flex flex-col md:flex-row mt-6 gap-4">
               <Calendar
                 subject={selectedSubject}
                 attendance={attendance}
@@ -194,7 +201,7 @@ const AttendenceManager = () => {
           <AttendanceModal
             date={modalDate}
             onClose={() => setModalDate(null)}
-            onSelect={updateAttendance}
+            onSelect={(date, status) => handleAttendanceUpdate(date, status)}
           />
         </div>
       </div>

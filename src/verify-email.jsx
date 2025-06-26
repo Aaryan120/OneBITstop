@@ -1,8 +1,6 @@
 // import { useEffect, useState } from "react";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
-import axios from "axios";
-import { USER_API_ENDPOINT } from "../constants";
 import toast, { Toaster } from "react-hot-toast";
 
 import { useRef } from "react";
@@ -36,7 +34,7 @@ export default function VerifyEmailPage() {
     const verifyToken = async () => {
       try {
         const response = await verifyEmail(token);
-        setStatus(response?.data?.message || "Email verified successfully!");
+        setStatus(response?.message || "Email verified successfully!");
         toast(
           "Email verified! You can now log in.",
           {
@@ -48,7 +46,6 @@ export default function VerifyEmailPage() {
         );
         setTimeout(() => navigate("/"), 3000);
       } catch (err) {
-        console.log("PRINTING ERROR:  ",err);
         const message =
           err.response?.data?.message || "Verification failed. Try again.";
         setStatus(message);

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
-
-const USER_API_ENDPOINT = "http://localhost:3000/api/attendance";
+import { deleteSubject } from "./services/operations/attendanceApi";
 
 const DeleteSubjectExample = () => {
   const [subjectToDelete, setSubjectToDelete] = useState("");
@@ -19,16 +17,9 @@ const DeleteSubjectExample = () => {
     }
 
     try {
-      const response = await axios.delete(
-        `${USER_API_ENDPOINT}/subject/${encodeURIComponent(subjectToDelete.trim())}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await deleteSubject(subjectToDelete.trim(), token);
 
-      setMessage(response.data.message);
+      setMessage(response.message);
       setSubjectToDelete("");
     } catch (error) {
       if (error.response) {

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios"; // Axios with credentials
 import { Label } from "./components/ui/label";
 import { Input } from "./components/ui/input";
 import { cn } from "./lib/utils";
 import { useAuth } from "./context/AuthContext";
-import { USER_API_ENDPOINT } from "../constants";
 import { getAllSellBuyListings, createSellBuyListing, deleteSellBuyListing } from "./services/operations/sellBuyApi";
+import { toast } from "react-hot-toast";
+import ConfirmationModal from "./components/ui/ConfirmationModal";
 
 export const Loader = () => (
   <div className="fixed inset-0 flex flex-col justify-center items-center bg-black/80 z-50">
@@ -45,6 +45,8 @@ const SellBuyPage = () => {
     email: user?.email || "",
   });
   const [imageFile, setImageFile] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [listingToDelete, setListingToDelete] = useState(null);
 
   const fetchListings = async () => {
     try {
@@ -113,7 +115,14 @@ const SellBuyPage = () => {
     setError(null);
     setLoading(true);
     if (!imageFile) {
-      alert("Please upload an image.");
+      toast("Please upload an image.",
+        {
+          type: "warning",
+          duration: 3000,
+          position: "bottom-right",
+          icon: "🔔",
+        }
+      )
       setLoading(false);
       return;
     }
@@ -131,7 +140,15 @@ const SellBuyPage = () => {
     formData.append("file", imageFile);
     try {
       const res = await createSellBuyListing(formData, user?.token);
-      alert("Listing created successfully!");
+      toast(
+        "Listing created successfully!",
+        {
+          type: "success",
+          duration: 3000,
+          position: "bottom-right",
+          icon: "🎉",
+        }
+      )
       setMarketItems((prev) => [res.data, ...prev]);
       setShowForm(false);
       setNewListing({
@@ -146,29 +163,56 @@ const SellBuyPage = () => {
       fetchListings();
     } catch (error) {
       setError(error.message || "Failed to create listing.");
-      alert(`Failed to create listing. Reason: ${error.message || "Unknown error"}`);
+      toast(
+        `Failed to create listing. Reason: ${error.message || "Unknown error"}`,
+        {
+          type: "error",
+          duration: 3000,
+          position: "bottom-right",
+          icon: "❌",
+        }
+      )
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteListing = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this listing?")) return;
+    setListingToDelete(id);
+    setShowConfirmModal(true);
+  };
+
+  const confirmDeleteListing = async () => {
+    if (!listingToDelete) return;
+    
     setError(null);
     setLoading(true);
     try {
-      await deleteSellBuyListing(id, user?.token);
+      await deleteSellBuyListing(listingToDelete, user?.token);
       fetchListings();
     } catch (error) {
       setError(error.message || "Failed to delete listing.");
     } finally {
       setLoading(false);
+      setListingToDelete(null);
     }
+  };
+
+  const closeConfirmModal = () => {
+    setShowConfirmModal(false);
+    setListingToDelete(null);
   };
 
   const handleSellClick = () => {
     if (!user) {
-      alert("Please log in to submit a listing.");
+      toast("Please log in to submit a listing.",
+        {
+          type: "warning",
+          duration: 3000,
+          position: "bottom-right",
+          icon: "🔔",
+        }
+      )
       return;
     }
     setShowForm(true);
@@ -271,9 +315,9 @@ const SellBuyPage = () => {
                   key={product._id}
                   className="relative overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-gray-200/60 dark:border-gray-700/60 flex flex-col w-[370px] h-[420px] max-w-full p-0 transition-transform duration-300 hover:scale-105 hover:shadow-3xl group"
                 >
-                  {product.imageSrc && (
+                  {product.photo && (
                     <img
-                      src={product.imageSrc}
+                      src={product.photo}
                       alt={product.title}
                       className="object-cover w-full h-48 rounded-t-3xl"
                       loading="lazy"
@@ -525,7 +569,18 @@ const SellBuyPage = () => {
               <div className="flex justify-end gap-3 pt-6">
                 <button
                   type="button"
-                  onClick={() => setShowForm(false)}
+                  onClick={() => {
+                    setShowForm(false);
+                    setNewListing({
+                      title: "",
+                      price: "",
+                      category: "",
+                      description: "",
+                      whatsappNumber: "",
+                      userEmail: user?.email || "",
+                    });
+                    setImageFile(null);
+                  }}
                   className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 text-sm font-medium"
                 >
                   Cancel
@@ -541,6 +596,14 @@ const SellBuyPage = () => {
           </div>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={closeConfirmModal}
+        onConfirm={confirmDeleteListing}
+        title="Confirm Deletion"
+        description="Are you sure you want to delete this listing?"
+      />
     </div>
   );
 };

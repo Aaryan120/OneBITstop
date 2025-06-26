@@ -19,6 +19,7 @@ export const attendanceEndpoints = {
     UPDATE_ATTENDANCE: `${BASE_URL}/api/v1/attendance/updateAttendance`,
     DELETE_SUBJECT: `${BASE_URL}/api/v1/attendance/deleteSubject/:subject`,
     CLEAR_ALL: `${BASE_URL}/api/v1/attendance/clearAll`,
+    ADD_SUBJECT: `${BASE_URL}/api/v1/attendance/addSubject`,
 }
 
 export const carpoolEndpoints = {

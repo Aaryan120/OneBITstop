@@ -4,7 +4,6 @@ import { Routes, Route } from "react-router-dom";
 import AttendenceManager from "./AttendenceManager";
 import MainLayout from "./MainLayout";
 import SellBuyPage from "./SellBuyPage";
-import NewsroomListing from "./NewsroomListing";
 import ScrollToTop from "./connectingcomponents/ScrollToTop";
 import LostAndFoundListing from "./LostAndFoundListing";
 import CarpoolingListing from "./CarpoolingListing";
@@ -14,7 +13,6 @@ import Footer from "./connectingcomponents/Footer";
 import UpdateProfileForm from "./UpdateProfileForm";
 import DeleteSubjectExample from "./DeleteSubjectExample";
 import ClearAttendanceButton from "./clearAllattendencefromdb";
-import NewsroomDashboard from "./UserNewsroomList";
 import VerifyEmailPage from "./verify-email";
 import ForgotPassword from "./ForgotPassword";
 import ResetPassword from "./ResetPassword";
@@ -32,13 +30,11 @@ const App = () => {
       <Route path="/test" element={<h1>Test Page</h1>} />
       <Route path="/myattendance" element={<AttendenceManager />} />
       <Route path="/bitlistings" element={<SellBuyPage />} />
-      <Route path="/newsroom" element={<NewsroomListing />} />
       <Route path="/lostfound" element={<LostAndFoundListing />} />
       <Route path="/hopbit" element={<CarpoolingListing />} />
       <Route path="/profile" element={<ProfileCard />} />
       <Route path="/update-profile" element={<UpdateProfileForm />} />
       <Route path="/deleteallAttendance" element={<ClearAttendanceButton />} />
-      <Route path="/mynewsroomlistings" element={<NewsroomDashboard />} />
       <Route path="/verify-email" element={<VerifyEmailPage />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />

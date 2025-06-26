@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { USER_API_ENDPOINT } from "../constants";
-import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import { forgotPassword } from "./services/operations/userApi";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -15,18 +14,31 @@ const ForgotPassword = () => {
     setMsg("");
 
     try {
-      const res = await axios.post(`${USER_API_ENDPOINT}/api/user/forgot-password`, {
-        email,
-      });
+      const res = await forgotPassword({ email });
 
-
-      setMsg(res.data.message);
-      toast.success("Reset link sent. Check your email.");
+      setMsg(res.message);
+      toast(
+        "Reset link sent. Check your email.",
+        {
+          type: "success",
+          duration: 3000,
+          position: "bottom-right",
+          icon: "🎉",
+        }
+      );
     } catch (err) {
       const errorMsg = err.response?.data?.message || "Something went wrong";
 
       setMsg(errorMsg);
-      toast.error(errorMsg);
+      toast(
+        errorMsg,
+        {
+          type: "error",
+          duration: 3000,
+          position: "bottom-right",
+          icon: "❌",
+        }
+      );
     } finally {
       setLoading(false);
     }

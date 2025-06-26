@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
-import { USER_API_ENDPOINT } from "../constants";
 import toast, { Toaster } from "react-hot-toast";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { resetPassword } from "./services/operations/userApi";
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -19,20 +18,16 @@ const ResetPassword = () => {
     setMsg("");
 
     try {
-      const res = await axios.post(
-        `${USER_API_ENDPOINT}/api/user/reset-password/${token}`,
-        { password }
-      );
+      const res = await resetPassword(token, { password });
 
-      setMsg(res.data.message);
-      toast.success(
-        <>
-          ✅ Password reset successful. Redirecting to login...
-          <br />
-          🔒 Please log in with your new password.
-        </>,
+      setMsg(res.message);
+      toast(
+        "Password reset successful. Redirecting to login...",
         {
+          type: "success",
           duration: 3000,
+          position: "bottom-right",
+          icon: "🎉",
         }
       );
 
@@ -42,7 +37,15 @@ const ResetPassword = () => {
     } catch (err) {
       const errorMsg = err.response?.data?.message || "Something went wrong";
       setMsg(errorMsg);
-      toast.error(`❌ ${errorMsg}`);
+      toast(
+        errorMsg,
+        {
+          type: "error",
+          duration: 3000,
+          position: "bottom-right",
+          icon: "❌",
+        }
+      );
     } finally {
       setLoading(false);
     }

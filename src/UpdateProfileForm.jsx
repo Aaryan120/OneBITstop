@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Label } from "./components/ui/label";
-import { Input } from "./components/ui/input";
 import { cn } from "./lib/utils";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { USER_API_ENDPOINT } from "../constants";
 import { useAuth } from "./context/AuthContext";
+import { updateProfile } from "./services/operations/userApi";
+import { toast } from "react-hot-toast";
 
 const UpdateProfileForm = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
   if (!user) {
-    console.error("User not authenticated, redirecting to login.");
+    toast("User not authenticated, redirecting to login.", {
+      type: "error",
+      duration: 3000,
+      position: "bottom-right",
+      icon: "❌",
+    });
     navigate("/");
     return null;
   }
@@ -58,18 +61,13 @@ const UpdateProfileForm = () => {
     };
 
     try {
-      const response = await axios.put(
-        `${USER_API_ENDPOINT}/api/user/update-profile`,
-        dataToSend,
-        {
-          withCredentials: true,
-        }
-      );
+      const token = user?.token || localStorage.getItem("token");
+      const response = await updateProfile(dataToSend, token);
 
-      setMessage(response.data.message);
+      setMessage(response.message);
       setSuccess(true);
 
-      const updatedUser = response.data.user;
+      const updatedUser = response.user;
 
       // Normalize keys
       const cleanedUser = {

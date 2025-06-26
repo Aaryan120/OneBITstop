@@ -1,11 +1,13 @@
 import React from "react";
 import Modal from "react-modal";
 
+// Set the app element for the modal
 Modal.setAppElement("#root");
 
 const AttendanceModal = ({ date, onClose, onSelect }) => {
   if (!date) return null;
-
+  
+  
   return (
   <Modal
     isOpen={!!date}

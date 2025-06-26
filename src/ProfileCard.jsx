@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { FaFacebookF, FaTwitter, FaLinkedinIn } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
-import { USER_API_ENDPOINT } from "../constants";
-import axios from "axios";
+import { logoutUser } from "./services/operations/userApi";
 
 // Animations (keep as is)
 const float = keyframes`
@@ -84,7 +83,7 @@ const Name = styled.h2`
   }
 `;
 
-const Bio = styled.p`
+const Bio = styled.div`
   font-size: 1.05rem;
   color: #e0e0e0;
   margin-bottom: 25px;
@@ -173,16 +172,18 @@ const ProfileCard = () => {
 
   const handleLogout = async () => {
     try {
-      // Optional: hit logout API if needed (you can remove this if you're fully client-side)
-      // await axios.post(`${USER_API_ENDPOINT}/api/user/logout`, {}, {
-      //   withCredentials: true,
-      // });
-
-      // Clear localStorage and state
-      localStorage.removeItem("user");
+      const token = user?.token || localStorage.getItem("token");
+      if (token) {
+        // Use the API function for logout
+        await logoutUser(token);
+      }
     } catch (err) {
       console.warn("Logout failed, clearing UI anyway.");
     }
+    
+    // Clear localStorage and state
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
     setUser(null);
     navigate("/");
     window.location.reload();

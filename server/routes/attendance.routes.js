@@ -5,6 +5,7 @@ import {
   upsertAttendance,
   deleteSubjectForUser,
   clearAllAttendance,
+  addSubject,
 } from "../controllers/attendance.controller.js";
 
 import isAuthenticated from "../middlewares/isAuthenticated.js";
@@ -30,5 +31,8 @@ router.delete("/clearAll", isAuthenticated, clearAllAttendance);
 router.post("/updateAttendance", isAuthenticated, (req, res) => {
   upsertAttendance(req, res); // userId will come from req.user._id inside upsertAttendance
 });
+
+router.post("/addSubject", isAuthenticated, addSubject);
+
 
 export default router;

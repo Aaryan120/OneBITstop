@@ -4,9 +4,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
+import { handleFileUpload } from "./middlewares/fileUpload.js";
 import userRoutes from "./routes/user.routes.js";
 import attendanceRoutes from "./routes/attendance.routes.js";
-import newsroomRoutes from "./routes/newsroom.routes.js";
 import lostfounditemRoutes from "./routes/lostFound.routes.js";
 import carpoolRoutes from "./routes/carpool.routes.js"; // Assuming carpoolRoutes is defined and imported
 import sellbuysRoutes from "./routes/sellbuy.routes.js"; // Assuming sellbuysRoutes is defined and imported
@@ -41,9 +41,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  console.log('Content-Type:', req.headers['content-type']);
+  console.log('Content-Length:', req.headers['content-length']);
+  next();
+});
+
+// Add file upload middleware for multipart form data
+app.use(handleFileUpload);
+
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/attendance", attendanceRoutes);
-app.use("/api/v1/college-events", newsroomRoutes);
 app.use("/api/v1/lost-found", lostfounditemRoutes);
 app.use("/api/v1/carpool", carpoolRoutes); // Assuming carpoolRoutes is defined and imported
 app.use("/api/v1/sellbuys", sellbuysRoutes); // Assuming carpoolRoutes is defined and imported

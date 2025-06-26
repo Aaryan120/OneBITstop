@@ -14,8 +14,8 @@ const carpoolSchema = new mongoose.Schema({
     required: true
   },
   departureTime: {
-    type: Date,
-    required: true // HH:mm AM/PM format
+    type: String,
+    required: true // HH:mm format
   },
   seatsAvailable: {
     type: Number,

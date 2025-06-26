@@ -130,7 +130,7 @@ export const loginUser = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    console.log("PRINTING USER: ",user);
+
     if (!user) {
       return res.status(400).json({
         error: "Invalid email or password",
@@ -166,6 +166,7 @@ export const loginUser = async (req, res) => {
       email: user.email,
       // phone: user.phone,
       // graduatingYear: user.graduatingYear,
+      token: token,
       isVerified: user.isVerified, // ✅ This was missing!
     };
 

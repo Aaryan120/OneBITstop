@@ -1,36 +1,22 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { clearAllAttendance } from "./services/operations/attendanceApi";
+import ConfirmationModal from "./components/ui/ConfirmationModal";
 
 const ClearAttendanceButton = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  const clearAttendance = async () => {
-    if (
-      !window.confirm(
-        "Are you sure you want to clear ALL attendance data? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
-
+  const handleClearAttendance = async () => {
     setLoading(true);
     setMessage("");
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.delete(
-        "http://localhost:3000/api/attendance/allclear",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await clearAllAttendance(token);
 
       setMessage(
-        response.data.message || "Attendance data cleared successfully."
+        response.message || "Attendance data cleared successfully."
       );
     } catch (error) {
       console.error("Failed to clear attendance:", error);
@@ -40,11 +26,19 @@ const ClearAttendanceButton = () => {
     }
   };
 
+  const openConfirmModal = () => {
+    setShowConfirmModal(true);
+  };
+
+  const closeConfirmModal = () => {
+    setShowConfirmModal(false);
+  };
+
   return (
     <div className="pt-32 px-4 flex justify-center">
       <div className="bg-gray-100 rounded-lg shadow-md p-6 w-full max-w-sm text-center">
         <button
-          onClick={clearAttendance}
+          onClick={openConfirmModal}
           disabled={loading}
           className={`w-full py-3 text-lg font-semibold rounded transition-colors duration-300 ${
             loading
@@ -58,6 +52,18 @@ const ClearAttendanceButton = () => {
           <p className="mt-4 text-gray-800 font-medium">{message}</p>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={closeConfirmModal}
+        onConfirm={handleClearAttendance}
+        title="Clear All Attendance Data"
+        message="Are you sure you want to clear ALL attendance data? This action cannot be undone."
+        confirmText="Clear All Data"
+        cancelText="Cancel"
+        confirmButtonClass="bg-red-600 hover:bg-red-700"
+        loading={loading}
+      />
     </div>
   );
 };
