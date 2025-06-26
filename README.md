@@ -30,7 +30,7 @@ A centralized, interactive dashboard for everything that matters on campus:
 
 | Landing Page | Newsroom | Marketplace |
 |----------|----------|-------------|
-| ![](https://github.com/user-attachments/assets/0b53a739-01c5-4832-a9f6-b1295973a41d) | ![Screenshot 2025-06-01 172317](https://github.com/user-attachments/assets/e68485f0-3b95-479e-9b26-c7126f802a7d)| ![Screenshot 2025-06-01 172357](https://github.com/user-attachments/assets/5fa4d8ac-e9a4-499b-8c3c-a4ca95ff2a48)
+| ![](public/landing_page.png) | ![Screenshot 2025-06-01 172317](https://github.com/user-attachments/assets/e68485f0-3b95-479e-9b26-c7126f802a7d)| ![Screenshot 2025-06-01 172357](https://github.com/user-attachments/assets/5fa4d8ac-e9a4-499b-8c3c-a4ca95ff2a48)
  |
 
 > 📷 *More screens from the app:*
