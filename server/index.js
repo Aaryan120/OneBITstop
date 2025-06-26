@@ -18,7 +18,8 @@ dotenv.config();
 connectDB();
 
 const allowedOrigins = [
-  "http://localhost:5173"
+  "http://localhost:5173",
+  "https://one-bit-stop.vercel.app",
 ];
 
 const corsOptions = {
