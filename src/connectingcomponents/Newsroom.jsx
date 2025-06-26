@@ -54,8 +54,8 @@ const Newsroom = () => {
       <div className="w-full h-full py-3 md:px-0">
         <div className="w-full mb-[-2rem] px-4 sm:px-6 lg:px-8 flex justify-center">
           <h2
-            className="text-center text-4xl md:text-5xl font-extrabold text-gray-600 font-sans tracking-tight drop-shadow-sm 
-              transition duration-300 ease-in-out hover:text-orange-500 hover:scale-105 hover:drop-shadow-md cursor-pointer"
+            className="text-center text-4xl md:text-5xl font-extrabold text-gray-600 dark:text-gray-300 font-sans tracking-tight drop-shadow-sm 
+              transition duration-300 ease-in-out hover:text-orange-500 dark:hover:text-orange-400 hover:scale-105 hover:drop-shadow-md cursor-pointer"
           >
             Newsroom
           </h2>
@@ -68,7 +68,7 @@ const Newsroom = () => {
                 <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 animate-spin" />
                 <div className="absolute inset-1 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 blur-sm opacity-30 animate-pulse" />
               </div>
-              <div className="text-lg font-semibold text-gray-600 animate-pulse">
+              <div className="text-lg font-semibold text-gray-600 dark:text-gray-300 animate-pulse">
                 Loading Newsroom...
               </div>
             </div>
