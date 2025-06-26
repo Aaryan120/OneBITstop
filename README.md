@@ -30,15 +30,15 @@ A centralized, interactive dashboard for everything that matters on campus:
 
 | Landing Page | Lost & Found | Marketplace |
 |----------|----------|-------------|
-| ![](public/landing_page.png) | ![Screenshot 2025-06-01 172317](https://github.com/user-attachments/assets/e68485f0-3b95-479e-9b26-c7126f802a7d)| ![Screenshot 2025-06-01 172357](public/buyandsell.png)
+| ![](public/landing_page.png) | ![Screenshot 2025-06-01 172317](public/lost&found.png)| ![Screenshot 2025-06-01 172357](public/buyandsell.png)
  |
 
 > 📷 *More screens from the app:*
 
-- ![Lost & Found](https://github.com/user-attachments/assets/83572daa-b506-4025-8ff1-63c9b91e413a)
+- ![Lost & Found](public/lost&found.png)
 - ![Carpool](public/hopbit.png)
-- ![Attendance Tracker](public/buyandsell.png)
-- ![Menu UI](https://github.com/user-attachments/assets/ad6bbc2c-bc8d-4ee7-8735-feb8e47f19c5)
+- ![Attendance Tracker](public/attendance.png)
+- ![Menu UI](public/menu.png)
 
 ---
 
