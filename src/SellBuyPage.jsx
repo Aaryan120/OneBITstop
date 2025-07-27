@@ -6,6 +6,7 @@ import { useAuth } from "./context/AuthContext";
 import { getAllSellBuyListings, createSellBuyListing, deleteSellBuyListing } from "./services/operations/sellBuyApi";
 import { toast } from "react-hot-toast";
 import ConfirmationModal from "./components/ui/ConfirmationModal";
+import FormLoader from "./components/ui/FormLoader";
 
 export const Loader = () => (
   <div className="fixed inset-0 flex flex-col justify-center items-center bg-black/80 z-50">
@@ -35,6 +36,8 @@ const SellBuyPage = () => {
   const [showForm, setShowForm] = useState(false);
   const [marketItems, setMarketItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
   const [newListing, setNewListing] = useState({
     title: "",
@@ -113,7 +116,7 @@ const SellBuyPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
+    setIsSubmitting(true);
     if (!imageFile) {
       toast("Please upload an image.",
         {
@@ -123,7 +126,7 @@ const SellBuyPage = () => {
           icon: "🔔",
         }
       )
-      setLoading(false);
+      setIsSubmitting(false);
       return;
     }
     const formatWhatsApp = (num) => {
@@ -173,11 +176,15 @@ const SellBuyPage = () => {
         }
       )
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   const handleDeleteListing = async (id) => {
+    if (!user) {
+      toast.error("Please log in to delete listings.");
+      return;
+    }
     setListingToDelete(id);
     setShowConfirmModal(true);
   };
@@ -185,20 +192,28 @@ const SellBuyPage = () => {
   const confirmDeleteListing = async () => {
     if (!listingToDelete) return;
     
+    if (!user?.token) {
+      toast.error("Authentication required to delete listings.");
+      return;
+    }
+    
     setError(null);
-    setLoading(true);
+    setIsDeleting(true);
     try {
-      await deleteSellBuyListing(listingToDelete, user?.token);
+      await deleteSellBuyListing(listingToDelete, user.token);
+      toast.success("Listing deleted successfully!");
       fetchListings();
     } catch (error) {
       setError(error.message || "Failed to delete listing.");
+      toast.error("Failed to delete listing. Please try again.");
     } finally {
-      setLoading(false);
+      setIsDeleting(false);
       setListingToDelete(null);
     }
   };
 
   const closeConfirmModal = () => {
+    if (isDeleting) return; // Don't close if currently deleting
     setShowConfirmModal(false);
     setListingToDelete(null);
   };
@@ -337,12 +352,39 @@ const SellBuyPage = () => {
                       </p>
                     </div>
                     <div className="flex items-end justify-end gap-2 mt-4">
+                      {/* Delete button - only show if user is the owner */}
+                      {user && user.email === product.email && (
+                        <button
+                          onClick={() => handleDeleteListing(product._id)}
+                          className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 rounded-full p-3 shadow-lg transition-transform duration-200 hover:scale-110 flex items-center justify-center absolute bottom-6 right-16 z-10"
+                          style={{ width: '48px', height: '48px' }}
+                          aria-label="Delete listing"
+                          title="Delete this listing"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 text-white"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                      
+                      {/* WhatsApp button */}
                       {product.whatsappNumber && (
                         <a
                           href={`https://wa.me/${product.whatsappNumber}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700 rounded-full p-3 shadow-lg transition-transform duration-200 hover:scale-110 flex items-center justify-center"
+                          className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700 rounded-full p-3 shadow-lg transition-transform duration-200 hover:scale-110 flex items-center justify-center absolute bottom-6 right-6 z-10"
                           style={{ width: '48px', height: '48px' }}
                           aria-label="Contact on WhatsApp"
                         >
@@ -367,28 +409,6 @@ const SellBuyPage = () => {
                             />
                           </svg>
                         </a>
-                      )}
-                      {user?.email === product.email && (
-                        <button
-                          onClick={() => handleDeleteListing(product._id)}
-                          className="text-red-500 hover:text-red-400 z-10 ml-2"
-                          title="Delete listing"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                        </button>
                       )}
                     </div>
                   </div>
@@ -587,9 +607,10 @@ const SellBuyPage = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-md bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white text-sm font-medium shadow-lg hover:brightness-110 transition"
+                  disabled={isSubmitting}
+                  className="px-4 py-2 rounded-md bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white text-sm font-medium shadow-lg hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Submit
+                  {isSubmitting ? "Creating..." : "Submit"}
                 </button>
               </div>
             </form>
@@ -602,8 +623,12 @@ const SellBuyPage = () => {
         onClose={closeConfirmModal}
         onConfirm={confirmDeleteListing}
         title="Confirm Deletion"
-        description="Are you sure you want to delete this listing?"
+        description="Are you sure you want to delete this listing? This action cannot be undone."
+        loading={isDeleting}
       />
+
+      {isSubmitting && <FormLoader message="Creating listing, please wait..." />}
+      {isDeleting && <FormLoader message="Deleting listing, please wait..." />}
     </div>
   );
 };

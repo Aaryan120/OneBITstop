@@ -23,7 +23,7 @@ import ConfirmationModal from "./ConfirmationModal";
 // Placeholder function - replace with actual API call when available
 const deleteCollegeEvent = async (eventId, token) => {
   // TODO: Implement actual API call to delete college event
-  console.log("Deleting college event:", eventId, "with token:", token);
+  // console.log("Deleting college event:", eventId, "with token:", token);
   // For now, just return a resolved promise
   return Promise.resolve({ success: true });
 };
@@ -240,7 +240,7 @@ export const Card = ({
         onDelete(card._id);
       }
     } catch (error) {
-      console.error("Error deleting event:", error);
+      // console.error("Error deleting event:", error);
       toast("Failed to delete the event. Please try again.",
         {
           type: "error",

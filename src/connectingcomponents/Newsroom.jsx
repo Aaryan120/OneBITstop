@@ -16,7 +16,7 @@ const Newsroom = () => {
         const firstSix = response.slice(0, 6);
         setEvents(firstSix);
       } catch (err) {
-        console.error("Error fetching events:", err);
+        // console.error("Error fetching events:", err);
         toast(
           "Failed to load newsroom events",
           {

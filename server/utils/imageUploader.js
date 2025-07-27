@@ -24,7 +24,7 @@ async function uploadFileToCloudinary(base64Data, folder, height, quality) {
     return result;
   } catch (error) {
     // Handle errors
-    console.error("Error uploading to Cloudinary:", error.message);
+    // console.error("Error uploading to Cloudinary:", error.message);
     throw error;
   }
 }

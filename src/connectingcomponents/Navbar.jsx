@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FaBars, FaTimes, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import ThemeToggle from '../components/ui/ThemeToggle';
+import toast from 'react-hot-toast';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +61,8 @@ const Navbar = () => {
       await logout();
       navigate('/');
     } catch (error) {
-      console.error('Logout failed:', error);
+      // console.error('Logout failed:', error);
+      toast.error("Logout failed");
     }
   };
 

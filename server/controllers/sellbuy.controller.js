@@ -50,7 +50,7 @@ export const createListing = async (req, res) => {
       data: savedListing,
     });
   } catch (error) {
-    console.error('Error creating listing:', error);
+    // console.error('Error creating listing:', error);
     res.status(400).json({
       message: 'Failed to create listing',
       error: error.message,

@@ -8,7 +8,7 @@ import { useAuth } from "./context/AuthContext";
 import { useTheme } from "./context/ThemeContext";
 import toast, { Toaster } from "react-hot-toast";
 import { getAttendance, updateAttendance as updateAttendanceApi } from "./services/operations/attendanceApi";
-
+import FormLoader from "./components/ui/FormLoader";
 const AttendenceManager = () => {
   const { user } = useAuth();
   const { isDark } = useTheme();
@@ -19,7 +19,7 @@ const AttendenceManager = () => {
   const [attendance, setAttendance] = useState({});
   const [modalDate, setModalDate] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-
+  const [isUpdating, setIsUpdating] = useState(false);
   useEffect(() => {
     if (!user) {
       toast(
@@ -108,6 +108,7 @@ const AttendenceManager = () => {
       return;
     }
 
+    setIsUpdating(true);
     try {
       const token = user?.token || localStorage.getItem("token");
       if (!token) {
@@ -158,6 +159,8 @@ const AttendenceManager = () => {
           position: "bottom-right",
         }
       );
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -203,6 +206,8 @@ const AttendenceManager = () => {
             onClose={() => setModalDate(null)}
             onSelect={(date, status) => handleAttendanceUpdate(date, status)}
           />
+
+          {isUpdating && <FormLoader message="Updating attendance, please wait..." />}
         </div>
       </div>
     </>

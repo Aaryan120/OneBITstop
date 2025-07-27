@@ -7,6 +7,7 @@ import { getImageSrc } from "./SellBuyPage";
 import { getLostFoundItems, addLostFoundItem, deleteLostFoundItem } from "./services/operations/lostFoundApi";
 import { toast } from "react-hot-toast";
 import ConfirmationModal from "./components/ui/ConfirmationModal";
+import FormLoader from "./components/ui/FormLoader";
 
 // Sample data
 const Loader = ({ message = "Loading, please wait..." }) => (
@@ -71,6 +72,8 @@ const LostAndFoundListing = () => {
   const [imageFile, setImageFile] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [newItem, setNewItem] = useState({
     title: "",
     description: "",
@@ -114,7 +117,7 @@ const LostAndFoundListing = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setIsLoadingItems(true);
+    setIsSubmitting(true);
     try {
       const formData = new FormData();
       formData.append("title", newItem.title);
@@ -135,10 +138,12 @@ const LostAndFoundListing = () => {
         whatsapp: "",
         date: "",
       });
+      toast.success("Item added successfully!");
     } catch (error) {
       setError(error.message || "Error submitting item");
+      toast.error("Failed to add item. Please try again.");
     } finally {
-      setIsLoadingItems(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -201,6 +206,10 @@ const LostAndFoundListing = () => {
   };
 
   const handleDeleteItem = async (id) => {
+    if (!user) {
+      toast.error("Please log in to delete items.");
+      return;
+    }
     setItemToDelete(id);
     setShowConfirmModal(true);
   };
@@ -208,20 +217,28 @@ const LostAndFoundListing = () => {
   const confirmDeleteItem = async () => {
     if (!itemToDelete) return;
     
+    if (!user?.token) {
+      toast.error("Authentication required to delete items.");
+      return;
+    }
+    
     setError(null);
-    setIsLoadingItems(true);
+    setIsDeleting(true);
     try {
-      await deleteLostFoundItem(itemToDelete, user?.token);
+      await deleteLostFoundItem(itemToDelete, user.token);
+      toast.success("Item deleted successfully!");
       fetchItems();
     } catch (error) {
       setError(error.message || "Failed to delete item");
+      toast.error("Failed to delete item. Please try again.");
     } finally {
-      setIsLoadingItems(false);
+      setIsDeleting(false);
       setItemToDelete(null);
     }
   };
 
   const closeConfirmModal = () => {
+    if (isDeleting) return; // Don't close if currently deleting
     setShowConfirmModal(false);
     setItemToDelete(null);
   };
@@ -336,7 +353,34 @@ const LostAndFoundListing = () => {
                             Date: {formatDate(item.date)}
                           </p>
                         </div>
-                        <div className="flex justify-end mt-4">
+                        <div className="flex justify-end mt-4 gap-2">
+                          {/* Delete button - only show if user is the owner */}
+                          {user && (item.user === user._id || item.userId === user._id) && (
+                            <button
+                              onClick={() => handleDeleteItem(item._id)}
+                              className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 rounded-full p-3 shadow-lg transition-transform duration-200 hover:scale-110 flex items-center justify-center absolute bottom-6 right-16 z-10"
+                              style={{ width: '48px', height: '48px' }}
+                              aria-label="Delete item"
+                              title="Delete this item"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5 text-white"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                            </button>
+                          )}
+                          
+                          {/* WhatsApp button */}
                           <a
                             href={whatsappLink}
                             target="_blank"
@@ -518,9 +562,10 @@ const LostAndFoundListing = () => {
                       </button>
                       <button
                         type="submit"
-                        className="group/btn relative block h-10 px-6 rounded-lg bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold shadow-lg hover:brightness-110 transition"
+                        disabled={isSubmitting}
+                        className="group/btn relative block h-10 px-6 rounded-lg bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold shadow-lg hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Add Item → <BottomGradient />
+                        {isSubmitting ? "Adding..." : "Add Item →"} <BottomGradient />
                       </button>
                     </div>
                   </form>
@@ -538,9 +583,13 @@ const LostAndFoundListing = () => {
           isOpen={showConfirmModal}
           onClose={closeConfirmModal}
           onConfirm={confirmDeleteItem}
-          message="Are you sure you want to delete this item?"
+          message="Are you sure you want to delete this item? This action cannot be undone."
+          loading={isDeleting}
         />
       )}
+
+      {isSubmitting && <FormLoader message="Adding lost/found item, please wait..." />}
+      {isDeleting && <FormLoader message="Deleting item, please wait..." />}
     </>
   );
 };

@@ -366,20 +366,30 @@ export const forgotPassword = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const token = crypto.randomBytes(32).toString("hex");
-    const tokenExpiry = Date.now() + 60 * 60 * 1000; // 1 hour
+    const tokenExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
 
     user.resetPasswordToken = token;
     user.resetPasswordExpires = tokenExpiry;
     await user.save();
 
     const resetURL = `${process.env.CLIENT_BASE_URL}/reset-password/${token}`;
-
-    await sendEmail({
-      to: user.email,
-      subject: "Password Reset",
-      text: `Click the link to reset your password: ${resetURL}`,
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
     });
 
+    await transporter.sendMail({
+      from: `"OneBITstop" - from BITIANS for BITIANS`,
+      to: user.email,
+      subject: "Reset Your Password",
+      html: `<p>Hi ${user.name},</p>
+             <p>Click the link below to reset your password:</p>
+             <a href="${resetURL}">${resetURL}</a>
+             <p>This link will expire in 10 minutes.</p>`,
+    });
     res.status(200).json({ message: "Password reset link sent to your email" });
   } catch (err) {
     res
