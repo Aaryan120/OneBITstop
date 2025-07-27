@@ -69,7 +69,7 @@ export const addItem = async (req, res) => {
       }
     );
   } catch (error) {
-    console.error("Error adding lost/found item:", error);
+    // console.error("Error adding lost/found item:", error);
     res.status(500).json({ message: "Server error, please try again later." });
   }
 };
@@ -80,7 +80,7 @@ export const getItems = async (req, res) => {
     const items = await LostFoundItem.find().sort({ createdAt: -1 });
     res.json(items);
   } catch (error) {
-    console.error("Error fetching lost/found items:", error);
+    // console.error("Error fetching lost/found items:", error);
     res.status(500).json({ message: "Server error, please try again later." });
   }
 };
@@ -92,7 +92,7 @@ export const deleteItem = async (req, res) => {
     await LostFoundItem.findByIdAndDelete(id);
     res.json({ message: "Item deleted successfully." });
   } catch (error) {
-    console.error("Error deleting lost/found item:", error);
+    // console.error("Error deleting lost/found item:", error);
     res.status(500).json({ message: "Server error, please try again later." });
   }
 };

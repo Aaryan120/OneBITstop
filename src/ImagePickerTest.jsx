@@ -14,11 +14,11 @@ const ImagePickerTest = () => {
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) {
-      console.log("No file selected");
+      // console.log("No file selected");
       return;
     }
 
-    console.log("File picked:", file);
+    // console.log("File picked:", file);
     setSelectedImage(file);
 
     const url = URL.createObjectURL(file);
@@ -29,9 +29,9 @@ const ImagePickerTest = () => {
       const base64data = reader.result;
       try {
         localStorage.setItem("pickedImage", base64data);
-        console.log("Image saved to localStorage");
+        // console.log("Image saved to localStorage");
       } catch (err) {
-        console.error("Failed to save image to localStorage", err);
+        // console.error("Failed to save image to localStorage", err);
       }
     };
     reader.readAsDataURL(file);
@@ -41,7 +41,7 @@ const ImagePickerTest = () => {
     setSelectedImage(null);
     setPreviewURL(null);
     localStorage.removeItem("pickedImage");
-    console.log("Image removed from localStorage");
+    // console.log("Image removed from localStorage");
   };
 
   return (

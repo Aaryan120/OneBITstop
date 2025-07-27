@@ -80,19 +80,19 @@ const UpdateProfileForm = () => {
 
       navigate("/profile");
     } catch (error) {
-      console.error("Error during update-profile API call:", error);
+      // console.error("Error during update-profile API call:", error);
 
       setMessage(error.response?.data?.message || "Failed to update profile.");
       setSuccess(false);
 
       if (error.response) {
-        console.error("Error response data:", error.response.data);
-        console.error("Error response status:", error.response.status);
-        console.error("Error response headers:", error.response.headers);
+        // console.error("Error response data:", error.response.data);
+        // console.error("Error response status:", error.response.status);
+        // console.error("Error response headers:", error.response.headers);
       } else if (error.request) {
-        console.error("No response received, request was:", error.request);
+        // console.error("No response received, request was:", error.request);
       } else {
-        console.error("Error setting up request:", error.message);
+        // console.error("Error setting up request:", error.message);
       }
     } finally {
       setLoading(false);

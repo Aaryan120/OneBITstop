@@ -44,9 +44,9 @@ app.use(cookieParser());
 
 // Add request logging middleware
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
-  console.log('Content-Type:', req.headers['content-type']);
-  console.log('Content-Length:', req.headers['content-length']);
+  // console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  // console.log('Content-Type:', req.headers['content-type']);
+  // console.log('Content-Length:', req.headers['content-length']);
   next();
 });
 

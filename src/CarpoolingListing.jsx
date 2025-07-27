@@ -5,6 +5,7 @@ import { Input } from "./components/ui/input";
 import { useAuth } from "./context/AuthContext";
 import { toast } from "react-hot-toast";
 import ConfirmationModal from "./components/ui/ConfirmationModal";
+import FormLoader from "./components/ui/FormLoader";
 
 const Loader = ({ message = "Loading, please wait..." }) => (
   <div className="fixed inset-0 flex flex-col justify-center items-center bg-white/80 dark:bg-black/80 z-50">
@@ -53,6 +54,8 @@ export default function CarpoolingListing() {
   });
 
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -83,6 +86,10 @@ export default function CarpoolingListing() {
   };
 
   const handleDeletePost = async (postId) => {
+    if (!user) {
+      toast.error("Please log in to delete carpool posts.");
+      return;
+    }
     setPostToDelete(postId);
     setShowConfirmModal(true);
   };
@@ -90,36 +97,35 @@ export default function CarpoolingListing() {
   const confirmDeletePost = async () => {
     if (!postToDelete) return;
     
-    setLoading(true);
+    if (!user?.token) {
+      toast.error("Authentication required to delete carpool posts.");
+      return;
+    }
+    
+    setIsDeleting(true);
     setError(null);
     try {
-      await deleteCarpool(postToDelete, user?.token);
+      await deleteCarpool(postToDelete, user.token);
       setPosts((prev) => prev.filter((p) => p._id !== postToDelete));
+      toast.success("Carpool post deleted successfully!");
     } catch (err) {
       setError(err.message || "Failed to delete the post");
-      toast(
-        `Failed to delete the post. Reason: ${err.message || "Unknown error"}`,
-        {
-          type: "error",
-          duration: 3000,
-          position: "bottom-right",
-          icon: "❌",
-        }
-      )
+      toast.error("Failed to delete carpool post. Please try again.");
     } finally {
-      setLoading(false);
+      setIsDeleting(false);
       setPostToDelete(null);
     }
   };
 
   const closeConfirmModal = () => {
+    if (isDeleting) return; // Don't close if currently deleting
     setShowConfirmModal(false);
     setPostToDelete(null);
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setIsSubmitting(true);
     setError(null);
     const payload = {
       pickupLocation: newPost.from,
@@ -145,10 +151,12 @@ export default function CarpoolingListing() {
         userEmail: user?.email || "",
         phoneNumber: "919876543210",
       });
+      toast.success("Carpool post created successfully!");
     } catch (err) {
       setError(err.message || "Error creating post");
+      toast.error("Failed to create carpool post. Please try again.");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -191,27 +199,7 @@ export default function CarpoolingListing() {
                   key={post._id}
                   className="relative overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-gray-200/60 dark:border-gray-700/60 flex flex-col w-full h-[340px] max-w-full p-0 transition-transform duration-300 hover:scale-105 hover:shadow-3xl group"
                 >
-                  {user?.email && post.email === user.email && (
-                    <button
-                      onClick={() => handleDeletePost(post._id)}
-                      className="absolute top-3 right-3 text-red-600 hover:text-red-800 z-10"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  )}
+
                   <div className="flex-1 flex flex-col justify-between p-6 overflow-hidden">
                     <div>
                       <div className="mb-2 text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -226,13 +214,40 @@ export default function CarpoolingListing() {
                         <p className="text-gray-700 dark:text-gray-200 italic mt-2 text-sm line-clamp-2">"{post.additionalNotes}"</p>
                       )}
                     </div>
-                    <div className="flex items-end justify-end mt-4">
+                    <div className="flex items-end justify-end gap-2 mt-4">
+                      {/* Delete button - only show if user is the owner */}
+                      {user && user.email === post.email && (
+                        <button
+                          onClick={() => handleDeletePost(post._id)}
+                          className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 rounded-full p-3 shadow-lg transition-transform duration-200 hover:scale-110 flex items-center justify-center absolute bottom-6 right-16 z-10"
+                          style={{ width: '48px', height: '48px' }}
+                          aria-label="Delete carpool post"
+                          title="Delete this carpool post"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 text-white"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                      
+                      {/* WhatsApp button */}
                       <a
                         href={`https://wa.me/${post.contactNumber}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Chat on WhatsApp"
-                        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700 rounded-full p-3 shadow-lg transition-transform duration-200 hover:scale-110 flex items-center justify-center"
+                        className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-emerald-600 hover:to-green-700 rounded-full p-3 shadow-lg transition-transform duration-200 hover:scale-110 flex items-center justify-center absolute bottom-6 right-6 z-10"
                         style={{ width: '48px', height: '48px' }}
                         aria-label="Contact on WhatsApp"
                       >
@@ -376,9 +391,10 @@ export default function CarpoolingListing() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-md bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold shadow-lg hover:brightness-110 transition"
+                  disabled={isSubmitting}
+                  className="px-5 py-2 rounded-md bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600 text-white font-semibold shadow-lg hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Add Post →
+                  {isSubmitting ? "Adding..." : "Add Post →"}
                 </button>
               </div>
             </form>
@@ -391,11 +407,15 @@ export default function CarpoolingListing() {
           isOpen={showConfirmModal}
           onClose={closeConfirmModal}
           onConfirm={confirmDeletePost}
-          message="Are you sure you want to delete this post?"
+          message="Are you sure you want to delete this carpool post? This action cannot be undone."
+          loading={isDeleting}
         />
       )}
 
       {error && <div className="text-red-500 text-center my-4">{error}</div>}
+
+      {isSubmitting && <FormLoader message="Creating carpool post, please wait..." />}
+      {isDeleting && <FormLoader message="Deleting carpool post, please wait..." />}
     </div>
   );
 }

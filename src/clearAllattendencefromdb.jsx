@@ -19,7 +19,7 @@ const ClearAttendanceButton = () => {
         response.message || "Attendance data cleared successfully."
       );
     } catch (error) {
-      console.error("Failed to clear attendance:", error);
+      // console.error("Failed to clear attendance:", error);
       setMessage("Failed to clear attendance data.");
     } finally {
       setLoading(false);

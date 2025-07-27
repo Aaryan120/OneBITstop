@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import { BiTrash } from "react-icons/bi";
 import { CalendarCheck } from "lucide-react";
 import DropdownPortal from "../components/ui/DropdownPortal";
+import FormLoader from "../components/ui/FormLoader";
 
 const AddSubjectModal = ({ isOpen, onClose, onAddSubject }) => {
   const [newSubject, setNewSubject] = useState("");
@@ -20,7 +21,8 @@ const AddSubjectModal = ({ isOpen, onClose, onAddSubject }) => {
       setNewSubject("");
       onClose();
     } catch (error) {
-      console.error("Error adding subject:", error);
+      // console.error("Error adding subject:", error);
+      toast.error("Error adding subject");    
     } finally {
       setIsLoading(false);
     }
@@ -137,11 +139,13 @@ const Navbar = ({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [subjectToDelete, setSubjectToDelete] = useState(null);
   const [newSubject, setNewSubject] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { token, user } = useAuth(); // Use token from your Auth context
   // const token = localStorage.getItem("token"); // Fallback if not using context
   const dropdownButtonRef = useRef(null);
 
   const handleAddSubject = async (subjectName) => {
+    setIsSubmitting(true);
     try {
       const trimmedSubject = subjectName.trim().toUpperCase(); // Convert to uppercase
       if (!trimmedSubject) return;
@@ -160,9 +164,11 @@ const Navbar = ({
         toast.error("Subject already exists");
       }
     } catch (error) {
-      console.error("Failed to add subject:", error);
+      // console.error("Failed to add subject:", error);
       toast.error("Failed to add subject");
       throw error;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -184,7 +190,7 @@ const Navbar = ({
           icon: "🔔",
         }
       )
-      console.warn("No token found, aborting subject removal.");
+      // console.warn("No token found, aborting subject removal.");
       return;
     }
 
@@ -202,7 +208,7 @@ const Navbar = ({
 
       toast.success("Subject deleted successfully!");
     } catch (error) {
-      console.error("Failed to delete subject:", error);
+      // console.error("Failed to delete subject:", error);
       toast("Failed to delete subject from database.",
         {
           type: "error",
@@ -323,6 +329,8 @@ const Navbar = ({
         onConfirm={handleDeleteConfirm}
         subjectName={subjectToDelete}
       />
+
+      {isSubmitting && <FormLoader message="Adding subject, please wait..." />}
     </>
   );
 };
