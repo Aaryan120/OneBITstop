@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import toast from "react-hot-toast";
 dotenv.config();
 
 const mailSender = async (email,title,body) =>{
@@ -22,8 +21,7 @@ const mailSender = async (email,title,body) =>{
         return info;
     }
     catch(error){
-        // console.log(error);
-        toast.error("Error sending email");
+        console.log(error);
     }
 }
 
